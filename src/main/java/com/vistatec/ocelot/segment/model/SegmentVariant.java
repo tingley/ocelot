@@ -1,7 +1,5 @@
 package com.vistatec.ocelot.segment.model;
 
-import com.vistatec.ocelot.segment.view.SegmentVariantSelection;
-
 import java.util.List;
 
 /**

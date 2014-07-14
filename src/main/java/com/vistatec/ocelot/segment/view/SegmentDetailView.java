@@ -114,6 +114,7 @@ public class SegmentDetailView extends JScrollPane {
                 for (int col = 1; col < 2; col++) {
                     int width = table.getColumnModel().getColumn(col).getWidth();
                     SegmentVariant sv = (SegmentVariant) tableModel.getValueAt(row, col);
+                    segmentCell.setRow(row);
                     segmentCell.setVariant(sv, true);
                     // Need to set width to force text area to calculate a pref height
                     segmentCell.setSize(new Dimension(width, table.getRowHeight(row)));
@@ -212,6 +213,7 @@ public class SegmentDetailView extends JScrollPane {
         public Component getTableCellRendererComponent(JTable jtable, Object o,
             boolean isSelected, boolean hasFocus, int row, int col) {
             SegmentTextCell renderTextPane = SegmentTextCell.createCell();
+            renderTextPane.setRow(row);
             if (tableModel.getRowCount() > row) {
                 if (col > 0) {
                     if (row > 2) {

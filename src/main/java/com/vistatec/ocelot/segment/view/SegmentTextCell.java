@@ -29,10 +29,15 @@
 package com.vistatec.ocelot.segment.view;
 
 import com.vistatec.ocelot.segment.model.SegmentVariant;
+import com.vistatec.ocelot.segment.model.SegmentVariantSelection;
 
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.event.InputMethodEvent;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,18 +57,21 @@ import javax.swing.text.StyledDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vistatec.ocelot.ui.ClipboardHelpers;
+
 /**
  * Representation of source/target segment text in segment table view.
  * Handles the style of the text with Inline tags and the link between
  * the editor behavior and the underlying data structure.
  */
-public class SegmentTextCell extends JTextPane {
+public class SegmentTextCell extends JTextPane implements ClipboardOwner {
     private static final long serialVersionUID = 1L;
 
     private static Logger LOG = LoggerFactory.getLogger(SegmentTextCell.class);
     public static final String tagStyle = "tag", regularStyle = "regular",
             insertStyle = "insert", deleteStyle = "delete", enrichedStyle = "enriched", highlightStyle="highlight", currHighlightStyle="currHighlight";
     private SegmentVariant v;
+    private int row;
     
     private boolean inputMethodChanged;
 
@@ -119,8 +127,8 @@ public class SegmentTextCell extends JTextPane {
      * @param isBidi whether the cell contains bidi content
      * @return
      */
-    public static SegmentTextCell createCell(SegmentVariant v, boolean raw, boolean isBidi) {
-        return new SegmentTextCell(v, raw, isBidi);
+    public static SegmentTextCell createCell(SegmentVariant v, int row, boolean raw, boolean isBidi) {
+        return new SegmentTextCell(v, row, raw, isBidi);
     }
 
     private SegmentTextCell(StyleContext styleContext) {
@@ -133,10 +141,19 @@ public class SegmentTextCell extends JTextPane {
         super();
     }
 
-    private SegmentTextCell(SegmentVariant v, boolean raw, boolean isBidi) {
+    private SegmentTextCell(SegmentVariant v, int row, boolean raw, boolean isBidi) {
         this(styles);
         setVariant(v, raw);
+        setRow(row);
         setBidi(isBidi);
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
     }
 
     public void setBidi(boolean isBidi) {
@@ -236,7 +253,64 @@ public class SegmentTextCell extends JTextPane {
     public void setTargetDiff(List<String> targetDiff) {
         setTextPane(targetDiff);
     }
-    
+
+    @Override
+    public void copy() {
+        ClipboardHelpers.copyToClipboard(new SegmentVariantSelection(getRow(),
+                getVariant().createCopy(), getSelectionStart(), getSelectionEnd()), this);
+        // XXX Currently this lets you select part of a tag.  Seems weird, no?
+        // TODO also handle 'cut'
+    }
+
+    @Override
+    public void lostOwnership(Clipboard clipboard, Transferable contents) {
+        try {
+            System.out.println("Lost ownership of " + contents.getTransferData(ClipboardHelpers.SEGMENT_VARIANT_SELECTION_FLAVOR));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void paste() {
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        // TODO: use getAvailableDataFlavors
+        try {
+            SegmentVariantSelection selection = (SegmentVariantSelection)clipboard.getData(ClipboardHelpers.SEGMENT_VARIANT_SELECTION_FLAVOR);
+            System.out.println("Pasting " + selection);
+            if (row != selection.getRow()) {
+                System.out.println("Pasting to a different row...");
+            }
+            else {
+                System.out.println("Pasting from within same row..");
+                // XXX Move this code into a different place
+                // XXX This will flatten codes to text, which is probably wrong... should
+                // I just ignore those codes?
+                String pasted = selection.getVariant().getDisplayText().substring(
+                        selection.getSelectionStart(), selection.getSelectionEnd());
+                int pastedLength = selection.getSelectionEnd() - selection.getSelectionStart();
+                // Get indexes in the selected text
+                // I will need to make sure it's insertable, etc
+                System.out.println("Pasting '" + pasted + "'" + " into row " + getRow() + " at [" + 
+                        getSelectionStart() + ", " + getSelectionEnd() + "]");
+
+                getVariant().replaceSelection(getSelectionStart(), getSelectionEnd(), selection);
+                int cursorPos = getSelectionEnd() + pastedLength;
+                setTextPane(getVariant().getStyleData(false));
+                setSelectionStart(cursorPos);
+                setSelectionEnd(cursorPos);
+            }
+            // TODO: need to set it somehow
+            // Cases
+            // - If this is not the same row, just paste the plain text
+            // - If this is the same row, we can paste placeholders, as long as we remove the other ones
+            //    --- How does this work?
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     /*
      * (non-Javadoc)

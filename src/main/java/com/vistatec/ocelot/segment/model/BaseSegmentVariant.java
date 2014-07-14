@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.vistatec.ocelot.segment.model.enrichment.Enrichment;
 import com.vistatec.ocelot.segment.model.enrichment.TranslationEnrichment;
-import com.vistatec.ocelot.segment.view.SegmentVariantSelection;
 
 public abstract class BaseSegmentVariant implements SegmentVariant {
 
