@@ -20,7 +20,7 @@ public class TestDirectoryBasedConfigs {
         assertEquals("B", pc.getUserProvenance().getRevOrg());
         assertEquals("C", pc.getUserProvenance().getProvRef());
         AppConfig ac = new AppConfig(configs);
-        assertEquals(2, ac.config.plugins.size());
+        assertEquals(2, ac.config.getPlugins().plugins.size());
         RuleConfiguration rc = new RulesParser().loadConfig(configs.getRulesReader());
         assertNotNull(rc);
         assertEquals(1, rc.getRules().size());

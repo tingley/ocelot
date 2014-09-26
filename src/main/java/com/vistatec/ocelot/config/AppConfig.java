@@ -85,12 +85,12 @@ public class AppConfig {
     }
 
     public boolean wasPluginEnabled(Plugin plugin) {
-        PluginConfig pcfg = config.findPluginConfig(plugin);
+        PluginConfig pcfg = config.getPlugins().findPluginConfig(plugin);
         return pcfg.getEnabled();
     }
 
     public void savePluginEnabled(Plugin plugin, boolean enabled) {
-        config.enablePlugin(plugin, enabled);
+        config.getPlugins().enablePlugin(plugin, enabled);
         try {
             marshal();
         } catch (Exception ex) {

@@ -28,44 +28,22 @@
  */
 package com.vistatec.ocelot.config;
 
-import com.vistatec.ocelot.plugins.Plugin;
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * XML Root Ocelot configuration element.
  */
-@XmlRootElement
+@XmlRootElement(name = "ocelot")
 public class RootConfig {
     @XmlElement
-    protected List<PluginConfig> plugins;
+    protected PluginsConfig plugins;
 
     public RootConfig() {
-        plugins = new ArrayList<PluginConfig>();
+        plugins = new PluginsConfig();
     }
 
-    public void enablePlugin(Plugin plugin, boolean enabled) {
-        PluginConfig pcfg = findPluginConfig(plugin);
-        pcfg.setEnabled(enabled);
-    }
-
-    public PluginConfig findPluginConfig(Plugin plugin) {
-        PluginConfig foundPluginConfig = null;
-        for (PluginConfig pcfg : plugins) {
-            if (pcfg.matches(plugin)) {
-                foundPluginConfig = pcfg;
-            }
-        }
-        if (foundPluginConfig == null) {
-            foundPluginConfig = new PluginConfig(plugin, false);
-            addPluginConfig(foundPluginConfig);
-        }
-        return foundPluginConfig;
-    }
-
-    public void addPluginConfig(PluginConfig pluginConfig) {
-        this.plugins.add(pluginConfig);
+    public PluginsConfig getPlugins() {
+        return plugins;
     }
 }
