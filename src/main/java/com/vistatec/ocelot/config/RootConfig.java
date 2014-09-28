@@ -28,6 +28,14 @@
  */
 package com.vistatec.ocelot.config;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -37,13 +45,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "ocelot")
 public class RootConfig {
     @XmlElement
-    protected PluginsConfig plugins;
+    protected PluginsConfig plugins = new PluginsConfig();
+    @XmlElement
+    protected DisplayConfig display = new DisplayConfig();
 
     public RootConfig() {
-        plugins = new PluginsConfig();
     }
 
     public PluginsConfig getPlugins() {
         return plugins;
+    }
+
+    public DisplayConfig getDisplay() {
+        return display;
+    }
+
+    static RootConfig unmarshal(JAXBContext jaxb, Reader r) throws JAXBException {
+        Unmarshaller unmarshal = jaxb.createUnmarshaller();
+        return (RootConfig) unmarshal.unmarshal(r);
+    }
+
+    void marshal(JAXBContext jaxb, Writer w) throws JAXBException, IOException {
+        Marshaller marshaller = jaxb.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+        marshaller.marshal(this, w);
+        w.close();
     }
 }

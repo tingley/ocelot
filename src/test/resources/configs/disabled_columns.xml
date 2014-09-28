@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ocelot>
+    <plugins/>
+    <display>
+        <columns>
+            <column enabled="false" original="SegNum"/>
+            <column enabled="false" original="Source"/>
+            <column enabled="false" original="Target"/>
+            <column enabled="false" original="Original"/>
+            <column enabled="false" original="EditDistance"/>
+            <column enabled="false" original="Flag1"/>
+            <column enabled="false" original="Flag2"/>
+            <column enabled="false" original="Flag3"/>
+            <column enabled="false" original="Flag4"/>
+            <column enabled="false" original="Flag5"/>
+        </columns>
+    </display>
+</ocelot>

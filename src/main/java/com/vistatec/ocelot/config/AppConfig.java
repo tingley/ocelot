@@ -73,9 +73,9 @@ public class AppConfig {
             Reader r = configs.getOcelotReader();
             if (r == null) {
                 config = new RootConfig();
-                marshal();
+                config.marshal(jaxb, configs.getOcelotWriter());
             } else {
-                unmarshal(r);
+                config = RootConfig.unmarshal(jaxb, r);
             }
         } catch (JAXBException ex) {
             LOG.error("Exception handling JAXB content", ex);
@@ -92,23 +92,9 @@ public class AppConfig {
     public void savePluginEnabled(Plugin plugin, boolean enabled) {
         config.getPlugins().enablePlugin(plugin, enabled);
         try {
-            marshal();
+            config.marshal(jaxb, configs.getOcelotWriter());
         } catch (Exception ex) {
             LOG.error("Failed to save plugin enabled configuration", ex);
         }
-    }
-
-    private void unmarshal(Reader r) throws JAXBException {
-        Unmarshaller unmarshal = jaxb.createUnmarshaller();
-        config = (RootConfig) unmarshal.unmarshal(r);
-    }
-
-    private void marshal() throws JAXBException, IOException {
-        Marshaller marshaller = jaxb.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-        Writer w = configs.getOcelotWriter();
-        marshaller.marshal(config, w);
-        w.close();
     }
 }
