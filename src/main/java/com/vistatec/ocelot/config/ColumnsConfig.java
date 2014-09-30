@@ -1,6 +1,7 @@
 package com.vistatec.ocelot.config;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -19,6 +20,15 @@ public class ColumnsConfig {
             columns.add(config);
         }
         config.setEnabled(enabled);
+    }
+
+    public EnumMap<SegmentViewColumn, Boolean> getColumnMap() {
+        EnumMap<SegmentViewColumn, Boolean> map =
+                new EnumMap<SegmentViewColumn, Boolean>(SegmentViewColumn.class);
+        for (SegmentViewColumn c : SegmentViewColumn.values()) {
+            map.put(c, isEnabled(c));
+        }
+        return map;
     }
 
     private ColumnConfig findConfig(SegmentViewColumn col) {

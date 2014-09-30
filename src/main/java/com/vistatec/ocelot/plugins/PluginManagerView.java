@@ -39,6 +39,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
@@ -71,9 +73,9 @@ public class PluginManagerView extends ODialogPanel implements ActionListener, I
         this(pluginManager, pluginManager.getPlugins(), segController);
     }
 
-    public PluginManagerView(PluginManager pluginManager, Set<? extends Plugin> plugins, SegmentController segController) {
+    public PluginManagerView(PluginManager pm, Set<? extends Plugin> plugins, SegmentController segController) {
         super(new GridBagLayout());
-        this.pluginManager = pluginManager;
+        this.pluginManager = pm;
         this.segmentController = segController;
         checkboxToPlugin = new HashMap<JCheckBox, Plugin>();
         setBorder(new EmptyBorder(10,10,10,10));
@@ -121,6 +123,16 @@ public class PluginManagerView extends ODialogPanel implements ActionListener, I
         add(title3, gridBag);
 
         initPlugins(plugins);
+    }
+
+    @Override
+    public void postInit() {
+        getDialog().addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                pluginManager.save();
+            }
+       });
     }
 
     /**

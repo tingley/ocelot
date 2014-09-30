@@ -18,7 +18,7 @@ public class PluginsConfig {
         pcfg.setEnabled(enabled);
     }
 
-    public PluginConfig findPluginConfig(Plugin plugin) {
+   private PluginConfig findPluginConfig(Plugin plugin) {
         PluginConfig foundPluginConfig = null;
         for (PluginConfig pcfg : plugins) {
             if (pcfg.matches(plugin)) {
@@ -30,6 +30,11 @@ public class PluginsConfig {
             addPluginConfig(foundPluginConfig);
         }
         return foundPluginConfig;
+    }
+
+    public boolean isPluginEnabled(Plugin plugin) {
+        PluginConfig pcfg = findPluginConfig(plugin);
+        return pcfg.getEnabled();
     }
 
     public void addPluginConfig(PluginConfig pluginConfig) {

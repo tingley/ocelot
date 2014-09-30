@@ -28,24 +28,26 @@
  */
 package com.vistatec.ocelot.config;
 
-import com.vistatec.ocelot.plugins.Plugin;
-
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.vistatec.ocelot.events.ConfigurationChangedEvent;
 
 /**
  * Ocelot application configuration preferences persistence class.
  * Handles the marshalling and unmarshalling of configuration data to/from the
  * XML config file.
+ *
+ * The configuration will save itself to disk upon receiving
+ * {@link ConfigurationChangedEvent}.
  */
 public class AppConfig {
     private Logger LOG = LoggerFactory.getLogger(AppConfig.class);
@@ -56,14 +58,36 @@ public class AppConfig {
     /**
      * Create an empty configuration.
      */
-    public AppConfig() { }
+    public AppConfig() {}
+
+    @Subscribe
+    public void handleConfigurationChange(ConfigurationChangedEvent e) {
+        save();
+    }
 
     /**
      * Create a configuration based on the specified files.
      * @param configs
      */
-    public AppConfig(Configs configs) {
+    public AppConfig(EventBus eventBus, Configs configs) {
+        eventBus.register(this);
         this.configure(configs);
+    }
+
+    /**
+     * Get the current columns configuration. 
+     * @return columns configuration
+     */
+    public ColumnsConfig getColumnsConfig() {
+        return config.getDisplay().getColumns();
+    }
+
+    /**
+     * Get the current plugins configuration.
+     * @return plugins configuration
+     */
+    public PluginsConfig getPluginsConfig() {
+        return config.getPlugins();
     }
 
     public void configure(Configs configs) {
@@ -84,17 +108,11 @@ public class AppConfig {
         }
     }
 
-    public boolean wasPluginEnabled(Plugin plugin) {
-        PluginConfig pcfg = config.getPlugins().findPluginConfig(plugin);
-        return pcfg.getEnabled();
-    }
-
-    public void savePluginEnabled(Plugin plugin, boolean enabled) {
-        config.getPlugins().enablePlugin(plugin, enabled);
+    public void save() {
         try {
             config.marshal(jaxb, configs.getOcelotWriter());
         } catch (Exception ex) {
-            LOG.error("Failed to save plugin enabled configuration", ex);
+            LOG.error("Failed to save configuration", ex);
         }
     }
 }

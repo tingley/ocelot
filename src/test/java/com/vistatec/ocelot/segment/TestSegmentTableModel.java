@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import com.vistatec.ocelot.SegmentViewColumn;
+import com.vistatec.ocelot.config.ColumnsConfig;
 import com.vistatec.ocelot.its.ITSMetadata;
 import com.vistatec.ocelot.rules.RuleConfiguration;
 
@@ -15,7 +16,7 @@ public class TestSegmentTableModel {
 
     @Before
     public void setup() throws Exception {
-        model = new SegmentTableModel(emptyController(), new RuleConfiguration());
+        model = new SegmentTableModel(emptyController(), new RuleConfiguration(), new ColumnsConfig());
     }
 
     @Test

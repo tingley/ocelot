@@ -30,7 +30,6 @@ package com.vistatec.ocelot.segment;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.vistatec.ocelot.config.AppConfig;
 import com.vistatec.ocelot.events.ITSSelectionEvent;
 import com.vistatec.ocelot.events.LQIModificationEvent;
 import com.vistatec.ocelot.events.LQISelectionEvent;
@@ -107,7 +106,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
     protected PluginManager pluginManager;
     private EventBus eventBus;
 
-    public SegmentView(EventBus eventBus, SegmentTableModel segmentTableModel, AppConfig appConfig,
+    public SegmentView(EventBus eventBus, SegmentTableModel segmentTableModel,
             RuleConfiguration ruleConfig, PluginManager pluginManager) throws IOException, 
                 InstantiationException, InstantiationException, IllegalAccessException {
         this.eventBus = eventBus;

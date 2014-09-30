@@ -19,6 +19,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
+import com.google.common.eventbus.EventBus;
+import com.vistatec.ocelot.config.ColumnsConfig;
+import com.vistatec.ocelot.events.ConfigurationChangedEvent;
 import com.vistatec.ocelot.rules.DataCategoryFlag;
 import com.vistatec.ocelot.rules.DataCategoryFlagRenderer;
 import com.vistatec.ocelot.segment.SegmentTableModel;
@@ -29,16 +32,20 @@ import com.vistatec.ocelot.ui.TableRowToggleMouseAdapter;
 public class ColumnSelector extends ODialogPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 
+    private ColumnsConfig config;
     private SegmentTableModel model;
+    private EventBus eventBus;
     private ColumnTable table;
     protected EnumMap<SegmentViewColumn, Boolean> enabledColumns =
             new EnumMap<SegmentViewColumn, Boolean>(SegmentViewColumn.class);
     private JButton ok;
     
-    public ColumnSelector(SegmentTableModel tableModel) {
+    public ColumnSelector(EventBus eventBus, ColumnsConfig config, SegmentTableModel model) {
         super(new BorderLayout(10, 10));
-        this.model = tableModel;
-        enabledColumns.putAll(model.getColumnEnabledStates());
+        this.eventBus = eventBus;
+        this.config = config;
+        this.model = model;
+        enabledColumns.putAll(config.getColumnMap());
 
         setBorder(new EmptyBorder(10,10,10,10));
 
@@ -67,10 +74,11 @@ public class ColumnSelector extends ODialogPanel implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         // Sync table data back to the model
         for (Map.Entry<SegmentViewColumn, Boolean> e : enabledColumns.entrySet()) {
-            model.setColumnEnabled(e.getKey(), e.getValue());
+            config.setColumnEnabled(e.getKey(), e.getValue());
         }
         getDialog().dispose();
         model.fireTableStructureChanged();
+        eventBus.post(new ConfigurationChangedEvent());
     }
 
     public class ColumnTable {

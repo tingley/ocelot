@@ -122,13 +122,14 @@ public class Ocelot extends JPanel implements Runnable, ActionListener, KeyEvent
     private ProvenanceConfig provConfig;
     private RuleConfiguration ruleConfig;
     private PluginManager pluginManager;
-    private EventBus eventBus = new EventBus();
+    private EventBus eventBus;
     private Color optionPaneBackgroundColor;
 
-    public Ocelot(AppConfig config, PluginManager pluginManager, 
+    public Ocelot(EventBus eventBus, AppConfig config, PluginManager pluginManager, 
                   RuleConfiguration ruleConfig, ProvenanceConfig provConfig)
             throws IOException, InstantiationException, IllegalAccessException {
         super(new BorderLayout());
+        this.eventBus = eventBus;
         this.appConfig = config;
         this.pluginManager = pluginManager;
         this.provConfig = provConfig;
@@ -152,8 +153,9 @@ public class Ocelot extends JPanel implements Runnable, ActionListener, KeyEvent
         
         Dimension segSize = new Dimension(500, 500);
 
-        segmentView = new SegmentView(eventBus, new SegmentTableModel(segmentController, ruleConfig),
-                                      config, ruleConfig, pluginManager);
+        segmentView = new SegmentView(eventBus, new SegmentTableModel(segmentController, ruleConfig,
+                                config.getColumnsConfig()),
+                                ruleConfig, pluginManager);
         segmentView.setMinimumSize(segSize);
 
         mainSplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -206,7 +208,8 @@ public class Ocelot extends JPanel implements Runnable, ActionListener, KeyEvent
             this.segmentView.setEnabledTargetDiff(this.menuTgtDiff.isSelected());
         }
         else if (e.getSource() == this.menuColumns) {
-            showModelessDialog(new ColumnSelector(segmentView.getTableModel()), "Configure Columns");
+            showModelessDialog(new ColumnSelector(eventBus,  appConfig.getColumnsConfig(),
+                    segmentView.getTableModel()), "Configure Columns");
         }
     }
 
@@ -468,13 +471,14 @@ public class Ocelot extends JPanel implements Runnable, ActionListener, KeyEvent
         File ocelotDir = new File(System.getProperty("user.home"), ".ocelot");
         ocelotDir.mkdirs();
         Configs configs = new DirectoryBasedConfigs(ocelotDir);
-        AppConfig appConfig = new AppConfig(configs);
+        EventBus eventBus = new EventBus();
+        AppConfig appConfig = new AppConfig(eventBus, configs);
         ProvenanceConfig provConfig = new ProvenanceConfig(configs);
         RuleConfiguration ruleConfig = new RulesParser().loadConfig(configs.getRulesReader());
-        PluginManager pluginManager = new PluginManager(appConfig, new File(ocelotDir, "plugins"));
+        PluginManager pluginManager = new PluginManager(appConfig.getPluginsConfig(), eventBus, new File(ocelotDir, "plugins"));
         pluginManager.discover();
 
-        Ocelot ocelot = new Ocelot(appConfig, pluginManager, ruleConfig, provConfig);
+        Ocelot ocelot = new Ocelot(eventBus, appConfig, pluginManager, ruleConfig, provConfig);
 
         try {
             if (ocelot.useNativeUI) {

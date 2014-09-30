@@ -28,27 +28,36 @@
  */
 package com.vistatec.ocelot.plugins;
 
-import com.vistatec.ocelot.config.AppConfig;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.vistatec.ocelot.config.PluginsConfig;
+import com.vistatec.ocelot.events.ConfigurationChangedEvent;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class TestPluginManager {
+    private URL url = getClass().getResource("/");
+    private EventBus eventBus;
+    private PluginManager pluginManager;
 
-    @Test
-    public void testPluginManager() throws Exception {
-        URL url = getClass().getResource("/");
+    @Before
+    public void setup() throws Exception {
+        eventBus = new EventBus();
         // If this assertion fails, it's probably something related
         // to the build environment
         assertNotNull(url);
+        pluginManager = new PluginManager(new PluginsConfig(), eventBus, new File(url.toURI()));
+    }
 
-        File pluginDir = new File(url.toURI());
-        PluginManager pluginManager = new PluginManager(new AppConfig(), pluginDir);
+    @Test
+    public void testPluginManager() throws Exception {
         pluginManager.discover();
 
         Set<ITSPlugin> itsPlugins = pluginManager.getITSPlugins();
@@ -62,5 +71,19 @@ public class TestPluginManager {
         Plugin segPlugin = segPlugins.iterator().next();
         assertEquals("Sample Segment Plugin", segPlugin.getPluginName());
         assertEquals("1.0", segPlugin.getPluginVersion());
+    }
+
+    private boolean caughtCCE = false;
+    @Test
+    public void testPostsConfigurationChangedEvent() {
+        assertFalse(caughtCCE);
+        eventBus.register(this);
+        pluginManager.save();
+        assertTrue(caughtCCE);
+    }
+
+    @Subscribe
+    public void catchConfigurationChangedEvent(ConfigurationChangedEvent e) {
+        caughtCCE = true;
     }
 }

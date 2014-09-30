@@ -33,6 +33,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import com.vistatec.ocelot.SegmentViewColumn;
+import com.vistatec.ocelot.config.ColumnsConfig;
 import com.vistatec.ocelot.rules.NullITSMetadata;
 import com.vistatec.ocelot.rules.RuleConfiguration;
 
@@ -48,31 +49,34 @@ public class SegmentTableModel extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
 
     private RuleConfiguration ruleConfig;
+    private ColumnsConfig columnsConfig;
     protected EnumMap<SegmentViewColumn, Boolean> enabledColumns =
             new EnumMap<SegmentViewColumn, Boolean>(SegmentViewColumn.class);
     private SegmentModel segmentController;
 
     public SegmentTableModel(SegmentModel segmentController,
-                             RuleConfiguration ruleConfig) {
+                             RuleConfiguration ruleConfig,
+                             ColumnsConfig columnsConfig) {
         this.segmentController = segmentController;
         this.ruleConfig = ruleConfig;
-        for (SegmentViewColumn c : SegmentViewColumn.values()) {
-            enabledColumns.put(c, c.isVisibleByDefaut());
-        }
+        this.columnsConfig = columnsConfig;
+        enabledColumns.putAll(columnsConfig.getColumnMap());
     }
 
     public boolean isColumnEnabled(SegmentViewColumn column) {
         return enabledColumns.get(column);
     }
 
-    public void setColumnEnabled(SegmentViewColumn column, boolean enabled) {
-        enabledColumns.put(column, enabled);
-    }
-
     public Map<SegmentViewColumn, Boolean> getColumnEnabledStates() {
         return Collections.unmodifiableMap(enabledColumns);
     }
-    
+
+    @Override
+    public void fireTableStructureChanged() {
+        enabledColumns.putAll(columnsConfig.getColumnMap());
+        super.fireTableStructureChanged();
+    }
+
     @Override
     public String getColumnName(int col) {
         return getColumn(col).getName();

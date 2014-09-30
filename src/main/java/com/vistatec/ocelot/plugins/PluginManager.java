@@ -28,7 +28,9 @@
  */
 package com.vistatec.ocelot.plugins;
 
-import com.vistatec.ocelot.config.AppConfig;
+import com.google.common.eventbus.EventBus;
+import com.vistatec.ocelot.config.PluginsConfig;
+import com.vistatec.ocelot.events.ConfigurationChangedEvent;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.Provenance;
 import com.vistatec.ocelot.segment.Segment;
@@ -72,13 +74,15 @@ public class PluginManager {
         private HashMap<SegmentPlugin, Boolean> segPlugins;
         private ClassLoader classLoader;
         private File pluginDir;
-        protected AppConfig appConfig;
+        protected PluginsConfig pluginsConfig;
+        private EventBus eventBus;
 	
-	public PluginManager(AppConfig appConfig, File pluginDir) {
+	public PluginManager(PluginsConfig pluginsConfig, EventBus eventBus, File pluginDir) {
             this.itsPlugins = new HashMap<ITSPlugin, Boolean>();
             this.segPlugins = new HashMap<SegmentPlugin, Boolean>();
             this.pluginDir = pluginDir;
-            this.appConfig = appConfig;
+            this.pluginsConfig = pluginsConfig;
+            this.eventBus = eventBus;
 	}
 
         public File getPluginDir() {
@@ -132,7 +136,7 @@ public class PluginManager {
                 SegmentPlugin segPlugin = (SegmentPlugin) plugin;
                 segPlugins.put(segPlugin, enabled);
             }
-            appConfig.savePluginEnabled(plugin, enabled);
+            pluginsConfig.enablePlugin(plugin, enabled);
         }
 
         /**
@@ -236,6 +240,10 @@ public class PluginManager {
             }
         }
 
+    public void save() {
+        eventBus.post(new ConfigurationChangedEvent());
+    }
+
     /**
      * Search the default directory for plugins. Equivalent to 
      * <code>discover(getPluginDir())</code>.
@@ -269,7 +277,7 @@ public class PluginManager {
 				@SuppressWarnings("unchecked")
 				Class<? extends ITSPlugin> c = (Class<ITSPlugin>)Class.forName(s, false, classLoader);
 				ITSPlugin plugin = c.newInstance();
-				itsPlugins.put(plugin, appConfig.wasPluginEnabled(plugin));
+				itsPlugins.put(plugin, pluginsConfig.isPluginEnabled(plugin));
 			}
 			catch (ClassNotFoundException e) {
 				// XXX Shouldn't happen?
@@ -285,7 +293,7 @@ public class PluginManager {
 				@SuppressWarnings("unchecked")
 				Class<? extends SegmentPlugin> c = (Class<SegmentPlugin>)Class.forName(s, false, classLoader);
 				SegmentPlugin plugin = c.newInstance();
-				segPlugins.put(plugin, appConfig.wasPluginEnabled(plugin));
+				segPlugins.put(plugin, pluginsConfig.isPluginEnabled(plugin));
 			}
 			catch (ClassNotFoundException e) {
 				// XXX Shouldn't happen?

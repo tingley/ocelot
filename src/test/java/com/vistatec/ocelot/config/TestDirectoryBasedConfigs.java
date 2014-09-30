@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.junit.*;
 
+import com.google.common.eventbus.EventBus;
 import com.vistatec.ocelot.rules.RuleConfiguration;
 import com.vistatec.ocelot.rules.RulesParser;
 
@@ -19,7 +20,7 @@ public class TestDirectoryBasedConfigs {
         assertEquals("A", pc.getUserProvenance().getRevPerson());
         assertEquals("B", pc.getUserProvenance().getRevOrg());
         assertEquals("C", pc.getUserProvenance().getProvRef());
-        AppConfig ac = new AppConfig(configs);
+        AppConfig ac = new AppConfig(new EventBus(), configs);
         //assertEquals(2, ac.config.getPlugins().plugins.size());
         RuleConfiguration rc = new RulesParser().loadConfig(configs.getRulesReader());
         assertNotNull(rc);
