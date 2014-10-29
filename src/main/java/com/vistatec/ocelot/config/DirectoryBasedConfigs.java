@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -21,12 +22,16 @@ public class DirectoryBasedConfigs implements Configs {
         this.dir = dir;
     }
 
-    protected Reader getReader(String filename) throws IOException {
+    protected InputStream getInputStream(String filename) throws IOException {
         File f = new File(dir, filename);
         if (!f.exists()) {
             return null;
         }
-        return new InputStreamReader(new FileInputStream(f), "UTF-8");
+        return new FileInputStream(f);
+    }
+
+    protected Reader getReader(String filename) throws IOException {
+        return new InputStreamReader(getInputStream(filename), "UTF-8");
     }
 
     protected Writer getWriter(String filename) throws IOException {

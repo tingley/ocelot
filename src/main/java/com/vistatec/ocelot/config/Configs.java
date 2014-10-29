@@ -1,6 +1,7 @@
 package com.vistatec.ocelot.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 
