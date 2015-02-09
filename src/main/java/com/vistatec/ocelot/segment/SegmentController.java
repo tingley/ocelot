@@ -48,9 +48,6 @@ import java.util.List;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Data model for a document.  This handles most manipulations of the 
  * segment model and generates most segment-related events.
@@ -98,6 +95,10 @@ public class SegmentController implements SegmentModel {
         return segments.size();
     }
 
+    public ProvenanceConfig getProvenanceConfig() {
+        return provConfig;
+    }
+
     /**
      * Return the current summary statistics for this document.
      * This view is *LIVE* and will always reflect the current
@@ -129,7 +130,7 @@ public class SegmentController implements SegmentModel {
             for (LanguageQualityIssue lqi : seg.getLQI()) {
                 docStats.addLQIStats(lqi);
             }
-            for (Provenance prov : seg.getProv()) {
+            for (Provenance prov : seg.getProvenance()) {
                 docStats.addProvenanceStats(prov);
             }
         }
@@ -137,14 +138,12 @@ public class SegmentController implements SegmentModel {
     }
 
     void notifyModifiedLQI(LanguageQualityIssue lqi, OcelotSegment seg) {
-        updateSegment(seg);
         docStats.addLQIStats(lqi);
         eventBus.post(new ITSDocStatsChangedEvent());
         eventBus.post(new LQIModificationEvent(lqi, seg));
     }
 
     void notifyRemovedLQI(LanguageQualityIssue lqi, OcelotSegment seg) {
-        updateSegment(seg);
         recalculateDocStats();
         eventBus.post(new LQIModificationEvent(lqi, seg));
     }
@@ -156,7 +155,6 @@ public class SegmentController implements SegmentModel {
     }
 
     public void notifyUpdateSegment(OcelotSegment seg) {
-        updateSegment(seg);
         eventBus.post(new SegmentEditEvent(seg));
     }
 
@@ -189,13 +187,8 @@ public class SegmentController implements SegmentModel {
     }
 
     private void addSegment(OcelotSegment seg) {
-        seg.setSegmentListener(this);
+        seg.setSegmentController(this);
         segments.add(seg);
-    }
-
-    public void updateSegment(OcelotSegment seg) {
-        segmentWriter.updateSegment(seg, this);
-        dirty = true;
     }
 
     public String getFileSourceLang() {

@@ -2,6 +2,7 @@ package com.vistatec.ocelot.segment;
 
 import net.sf.okapi.common.resource.TextContainer;
 
+import com.vistatec.ocelot.its.Provenance;
 import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentVariant;
 import com.vistatec.ocelot.segment.okapi.TextContainerVariant;
@@ -33,5 +34,13 @@ public class SimpleSegment extends OcelotSegment {
     @Override
     public String getTransUnitId() {
         return "dummy";
+    }
+
+    @Override
+    protected void updateSegment() {
+    }
+
+    @Override
+    protected void addNativeProvenance(Provenance prov) {
     }
 }

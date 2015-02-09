@@ -87,7 +87,7 @@ public class TestXLIFFParser {
 
     public void testReadProvenance(OcelotSegment seg) {
         assertEquals("Provenance ref is incorrect", "#prov1", seg.getProvID());
-        List<Provenance> provRecords = seg.getProv();
+        List<Provenance> provRecords = seg.getProvenance();
         assertEquals("Discrepancy in provenance records", 1, provRecords.size());
         Provenance prov = provRecords.get(0);
         assertEquals("Provenance person is incorrect", "translator-1", prov.getPerson());
@@ -100,7 +100,7 @@ public class TestXLIFFParser {
 
     public void testReadMultipleProv(OcelotSegment seg) {
         assertEquals("Provenance ref is incorrect", "#prov2", seg.getProvID());
-        List<Provenance> provRecords = seg.getProv();
+        List<Provenance> provRecords = seg.getProvenance();
         assertEquals("Discrepancy in provenance records", 2, provRecords.size());
         for (Provenance prov : provRecords) {
             if (prov.getPerson() != null) {

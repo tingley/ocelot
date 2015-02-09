@@ -17,7 +17,6 @@ import com.vistatec.ocelot.config.ConfigsForProvTesting;
 import com.vistatec.ocelot.config.ProvenanceConfig;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.stats.ITSDocStats;
-import com.vistatec.ocelot.rules.RuleConfiguration;
 import com.vistatec.ocelot.rules.RulesTestHelpers;
 import com.vistatec.ocelot.segment.SegmentController;
 

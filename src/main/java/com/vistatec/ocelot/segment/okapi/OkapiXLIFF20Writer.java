@@ -40,12 +40,8 @@ import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.vistatec.ocelot.config.ProvenanceConfig;
-import com.vistatec.ocelot.config.UserProvenance;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.segment.OcelotSegment;
-import com.vistatec.ocelot.segment.SegmentController;
 import com.vistatec.ocelot.segment.XLIFFWriter;
 
 import java.util.List;
@@ -53,7 +49,6 @@ import java.util.List;
 import net.sf.okapi.lib.xliff2.core.Fragment;
 import net.sf.okapi.lib.xliff2.core.MTag;
 import net.sf.okapi.lib.xliff2.core.Part;
-import net.sf.okapi.lib.xliff2.core.Segment;
 import net.sf.okapi.lib.xliff2.core.Tag;
 import net.sf.okapi.lib.xliff2.core.TagType;
 import net.sf.okapi.lib.xliff2.its.IITSItem;
@@ -61,7 +56,6 @@ import net.sf.okapi.lib.xliff2.its.ITSItems;
 import net.sf.okapi.lib.xliff2.its.ITSWriter;
 import net.sf.okapi.lib.xliff2.its.LocQualityIssue;
 import net.sf.okapi.lib.xliff2.its.LocQualityIssues;
-import net.sf.okapi.lib.xliff2.its.Provenances;
 import net.sf.okapi.lib.xliff2.reader.Event;
 
 /**
@@ -70,101 +64,9 @@ import net.sf.okapi.lib.xliff2.reader.Event;
 public class OkapiXLIFF20Writer implements XLIFFWriter {
     private final Logger LOG = LoggerFactory.getLogger(OkapiXLIFF20Writer.class);
     private final OkapiXLIFF20Parser parser;
-    private final ProvenanceConfig provConfig;
 
-    public OkapiXLIFF20Writer(OkapiXLIFF20Parser parser, ProvenanceConfig provConfig) {
+    public OkapiXLIFF20Writer(OkapiXLIFF20Parser parser) {
         this.parser = parser;
-        this.provConfig = provConfig;
-    }
-
-    @Override
-    public void updateSegment(OcelotSegment seg, SegmentController controller) {
-        Preconditions.checkState(seg instanceof OkapiXLIFF20Segment,
-                "Unexpected non-XLIFF 2.0 segment %s", seg);
-
-        Segment unitPart = ((OkapiXLIFF20Segment)seg).getSegment();
-
-        //TODO: set ori target
-        if (seg.hasOriginalTarget()) {
-            FragmentVariant targetFrag = (FragmentVariant) seg.getTarget();
-            Fragment updatedOkapiFragment = targetFrag.getUpdatedOkapiFragment(unitPart.getTarget());
-            unitPart.setTarget(updatedOkapiFragment);
-        }
-
-        updateITSLQIAnnotations(unitPart, seg);
-
-        if (!haveAddedOcelotProvAnnotation(unitPart, seg)) {
-            updateITSProvAnnotations(unitPart, seg);
-        }
-
-        FragmentVariant source = (FragmentVariant) seg.getSource();
-        source.updateSegmentAtoms(unitPart);
-
-        FragmentVariant target = (FragmentVariant) seg.getTarget();
-        target.updateSegmentAtoms(unitPart);
-    }
-
-    /**
-     * Records the Ocelot ITS Provenance record to the Okapi segment
-     * representation used when saving the file using the Okapi XLIFF 2.0 writer.
-     * @param unitPart - Okapi representation of the segment to annotate
-     * @param seg - Ocelot segment
-     */
-    private void updateITSProvAnnotations(Part unitPart, OcelotSegment seg) {
-        Provenances okapiOcelotProv = getOkapiOcelotProvenance(seg);
-        if (okapiOcelotProv != null) {
-            ITSWriter.annotate(unitPart.getTarget(), 0, -1, okapiOcelotProv);
-
-            seg.addProvenance(new OkapiProvenance(okapiOcelotProv.getList().get(0)));
-            seg.setAddedRWProvenance(true);
-        }
-    }
-
-    /**
-     * Constructs the Okapi representation of the Ocelot ITS Provenance record
-     * if the reviewer's profile is set.
-     * @param seg - Ocelot segment
-     * @return - Okapi ITS Provenance Object or null if profile {@link UserProvenance} is not set
-     */
-    private Provenances getOkapiOcelotProvenance(OcelotSegment seg) {
-        UserProvenance userProvenance = provConfig.getUserProvenance();
-        if (userProvenance.isEmpty()) {
-            return null;
-        }
-
-        String ocelotProvId = "OcelotProv" + seg.getSegmentNumber();
-        Provenances okapiProvGroup = new Provenances(ocelotProvId);
-
-        net.sf.okapi.lib.xliff2.its.Provenance okapiProv
-                = new net.sf.okapi.lib.xliff2.its.Provenance();
-        okapiProv.setRevPerson(userProvenance.getRevPerson());
-        okapiProv.setRevOrg(userProvenance.getRevOrg());
-        okapiProv.setRevTool("http://open.vistatec.com/ocelot");
-        okapiProv.setProvRef(userProvenance.getProvRef());
-        okapiProvGroup.getList().add(okapiProv);
-
-        return okapiProvGroup;
-    }
-
-    private boolean haveAddedOcelotProvAnnotation(Part unitPart, OcelotSegment seg) {
-        boolean haveAddedUserProv = seg.addedRWProvenance();
-
-        List<Tag> targetTags = unitPart.getTarget().getOwnTags();
-        for (Tag tag : targetTags) {
-            if (tag.isMarker()) {
-                MTag mtag = (MTag) tag;
-
-                if (mtag.hasITSItem()) {
-                    Provenances provMetadata = (Provenances) mtag.getITSItems()
-                            .get(net.sf.okapi.lib.xliff2.its.Provenance.class);
-                    if (provMetadata != null
-                            && provMetadata.getGroupId().matches("OcelotProv[0-9]*")) {
-                        haveAddedUserProv = true;
-                    }
-                }
-            }
-        }
-        return haveAddedUserProv;
     }
 
     /**

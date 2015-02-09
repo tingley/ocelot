@@ -101,9 +101,9 @@ public class OkapiXLIFFFactory implements XLIFFFactory {
     @Override
     public XLIFFWriter newXLIFFWriter(XLIFFParser parser, ProvenanceConfig config) {
         if (parser instanceof OkapiXLIFF12Parser) {
-            return new OkapiXLIFF12Writer((OkapiXLIFF12Parser) parser, config);
+            return new OkapiXLIFF12Writer((OkapiXLIFF12Parser) parser);
         } else if (parser instanceof OkapiXLIFF20Parser) {
-            return new OkapiXLIFF20Writer((OkapiXLIFF20Parser) parser, config);
+            return new OkapiXLIFF20Writer((OkapiXLIFF20Parser) parser);
         } else {
             throw new IllegalArgumentException("Unrecognized XLIFF parser version!");
         }

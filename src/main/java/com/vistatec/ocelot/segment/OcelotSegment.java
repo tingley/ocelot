@@ -70,7 +70,11 @@ public abstract class OcelotSegment {
         }
     }
 
-    public void setSegmentListener(SegmentController segController) {
+    public SegmentController getSegmentController() {
+        return segmentListener;
+    }
+
+    public void setSegmentController(SegmentController segController) {
         this.segmentListener = segController;
     }
 
@@ -102,6 +106,45 @@ public abstract class OcelotSegment {
     }
 
     /**
+     * Do any work necessary to synchronize the current segment state
+     * back to the underlying representation.  This is called when the
+     * segment data has been modified, potentially including LQI data.
+     * Provenance additions are signalled separately.
+     */
+    protected abstract void updateSegment();
+
+    /**
+     * Return true if this segment is editable.  This may depend
+     * on format-specific information.
+     * @return
+     */
+    public abstract boolean isEditable();
+
+    // Currently unused
+    public abstract String getTransUnitId();
+
+    /**
+     * Attach a provenance object to the underlying native representation.
+     * This will be called whenever a new provenance item is added ot the
+     * segment.
+     */
+    protected abstract void addNativeProvenance(Provenance prov);
+
+    /**
+     * Update provenance and then call the implementation for additional updates.
+     * I'm not 100% certain that this call should be handling so many
+     * different cases, particuarly updateTarget.
+     */
+    void modifySegment() {
+        markWithUserProvenance();
+        updateSegment();
+    }
+
+    public void markWithUserProvenance() {
+        addProvenance(getSegmentController().getProvenanceConfig().getUserProvenance());
+    }
+
+    /**
      * Sets the new target for this segment.  Sets an original target value
      * if none exists.  Updates target diff value.
      * @param updatedTarget
@@ -115,8 +158,9 @@ public abstract class OcelotSegment {
             editDistance = NO_EDIT_DISTANCE;
             setTargetDiff(EditDistance.styleTextDifferences(getTarget(),
                           getOriginalTarget()));
+            modifySegment();
             if (segmentListener != null) {
-                segmentListener.notifyUpdateSegment(this);
+                segmentListener.notifyUpdateSegment(this); // needed for edit events
             }
         }
     }
@@ -124,6 +168,7 @@ public abstract class OcelotSegment {
     public void resetTarget() {
         if (setOriginalTarget) {
             updateTarget(getOriginalTarget());
+            modifySegment();
             if (segmentListener != null) {
                 segmentListener.notifyResetTarget(this);
             }
@@ -137,14 +182,6 @@ public abstract class OcelotSegment {
     private void setTargetDiff(ArrayList<String> targetDiff) {
         this.targetDiff = targetDiff;
     }
-
-    /**
-     * XLIFF specific fields.
-     */
-    public abstract boolean isEditable();
-
-    // Currently unused
-    public abstract String getTransUnitId();
 
     public StateQualifier getStateQualifier() {
         return this.state_qualifier;
@@ -162,7 +199,7 @@ public abstract class OcelotSegment {
         this.provID = provId;
     }
 
-    public List<Provenance> getProv() {
+    public List<Provenance> getProvenance() {
         return provList;
     }
 
@@ -171,18 +208,13 @@ public abstract class OcelotSegment {
     }
 
     public void addProvenance(Provenance prov) {
-        provList.add(prov);
-        if (segmentListener != null) {
-            segmentListener.notifyAddedProv(prov);
+        if (!prov.isEmpty() && !provList.contains(prov)) {
+            provList.add(prov);
+            addNativeProvenance(prov);
+            if (segmentListener != null) {
+                segmentListener.notifyAddedProv(prov);
+            }
         }
-    }
-
-    public boolean addedRWProvenance() {
-        return addedProvenance;
-    }
-
-    public void setAddedRWProvenance(boolean flag) {
-        addedProvenance = flag;
     }
 
     public String getLQIID() {
@@ -210,12 +242,14 @@ public abstract class OcelotSegment {
         if (segmentListener != null) {
             segmentListener.notifyModifiedLQI(lqi, this);
         }
+        updateSegment();
     }
 
     public void editedLQI(LanguageQualityIssue lqi) {
         if (segmentListener != null) {
             segmentListener.notifyModifiedLQI(lqi, this);
         }
+        updateSegment();
     }
 
     public void removeLQI(LanguageQualityIssue removeLQI) {
@@ -223,6 +257,7 @@ public abstract class OcelotSegment {
         if (segmentListener != null) {
             segmentListener.notifyRemovedLQI(removeLQI, this);
         }
+        updateSegment();
     }
 
     public List<OtherITSMetadata> getOtherITSMetadata() {

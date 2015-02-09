@@ -2,7 +2,10 @@ package com.vistatec.ocelot.config;
 
 import java.io.IOException;
 import java.io.StringWriter;
+
 import org.junit.*;
+
+import com.vistatec.ocelot.its.Provenance;
 
 import static org.junit.Assert.*;
 
@@ -24,7 +27,7 @@ public class TestProvenanceConfig {
         ProvenanceConfig config = new ProvenanceConfig(new ConfigsForProvTesting(
                 "externalReference=C\nrevOrganization=B\nrevPerson=A", null));
         assertFalse(config.isEmpty());
-        UserProvenance prov = config.getUserProvenance();
+        Provenance prov = config.getUserProvenance();
         assertNotNull(prov);
         assertFalse(prov.isEmpty());
         assertEquals("A", prov.getRevPerson());
@@ -36,7 +39,7 @@ public class TestProvenanceConfig {
     public void testSaveProvenance() throws IOException {
         StringWriter sw = new StringWriter();
         ProvenanceConfig config = new ProvenanceConfig(new ConfigsForProvTesting("", sw));
-        UserProvenance prov = config.getUserProvenance();
+        Provenance prov = config.getUserProvenance();
         prov.setProvRef("D");
         prov.setRevPerson("E");
         prov.setRevOrg("F");
@@ -44,7 +47,7 @@ public class TestProvenanceConfig {
 
         config = new ProvenanceConfig(new ConfigsForProvTesting(sw.toString(), null));
         assertFalse(config.isEmpty());
-        UserProvenance roundtrip = config.getUserProvenance();
+        Provenance roundtrip = config.getUserProvenance();
         assertEquals("D", roundtrip.getProvRef());
         assertEquals("E", roundtrip.getRevPerson());
         assertEquals("F", roundtrip.getRevOrg());

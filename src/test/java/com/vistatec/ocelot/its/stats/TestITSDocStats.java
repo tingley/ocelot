@@ -9,8 +9,8 @@ import net.sf.okapi.common.annotation.GenericAnnotationType;
 import org.junit.*;
 
 import com.vistatec.ocelot.its.LanguageQualityIssue;
+import com.vistatec.ocelot.its.ProvenanceFactory;
 import com.vistatec.ocelot.its.stats.ProvenanceStats.Type;
-import com.vistatec.ocelot.segment.okapi.OkapiProvenance;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +36,8 @@ public class TestITSDocStats {
         ITSDocStats docStats = new ITSDocStats();
         // XXX Bit of a cheat here, I'm assuming the order that the
         // stats are added to the docStats object
-        docStats.addProvenanceStats(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
+        docStats.addProvenanceStats(ProvenanceFactory.fromOkapiXLIFF12Annotation(
+                new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_PERSON, "testPerson",
                 GenericAnnotationType.PROV_ORG, "testOrg",
                 GenericAnnotationType.PROV_TOOL, "testTool")));
@@ -44,7 +45,8 @@ public class TestITSDocStats {
                                    getProvStats(Type.org, "testOrg", 1),
                                    getProvStats(Type.tool, "testTool", 1)),
                      docStats.getStats());
-        docStats.addProvenanceStats(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
+        docStats.addProvenanceStats(ProvenanceFactory.fromOkapiXLIFF12Annotation(
+                new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_PERSON, "testPerson",
                 GenericAnnotationType.PROV_ORG, "testOrg",
                 GenericAnnotationType.PROV_TOOL, "testTool",

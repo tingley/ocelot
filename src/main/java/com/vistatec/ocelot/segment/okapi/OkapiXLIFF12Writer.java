@@ -28,40 +28,19 @@
  */
 package com.vistatec.ocelot.segment.okapi;
 
-import com.google.common.base.Preconditions;
-import com.vistatec.ocelot.config.ProvenanceConfig;
-import com.vistatec.ocelot.its.LanguageQualityIssue;
-import com.vistatec.ocelot.segment.OcelotSegment;
-import com.vistatec.ocelot.segment.SegmentController;
-import com.vistatec.ocelot.segment.SegmentVariant;
 import com.vistatec.ocelot.segment.XLIFFWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.sf.okapi.common.LocaleId;
 import net.sf.okapi.common.Namespaces;
-import net.sf.okapi.common.annotation.AltTranslation;
-import net.sf.okapi.common.annotation.AltTranslationsAnnotation;
-import net.sf.okapi.common.annotation.GenericAnnotation;
-import net.sf.okapi.common.annotation.GenericAnnotationType;
-import net.sf.okapi.common.annotation.ITSLQIAnnotations;
-import net.sf.okapi.common.annotation.ITSProvenanceAnnotations;
-import net.sf.okapi.common.annotation.XLIFFTool;
-import net.sf.okapi.common.query.MatchType;
 import net.sf.okapi.common.resource.DocumentPart;
-import net.sf.okapi.common.resource.ITextUnit;
-import net.sf.okapi.common.resource.Property;
-import net.sf.okapi.common.resource.TextContainer;
 import net.sf.okapi.common.skeleton.GenericSkeleton;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Write out XLIFF files using Okapi's XLIFFSkeletonWriter.
@@ -69,114 +48,15 @@ import org.slf4j.LoggerFactory;
  * retrieved from the XLIFFParser.
  */
 public class OkapiXLIFF12Writer extends OkapiSegmentWriter implements XLIFFWriter {
-    private Logger LOG = LoggerFactory.getLogger(OkapiXLIFF12Writer.class);
     private OkapiXLIFF12Parser parser;
 
-    public OkapiXLIFF12Writer(OkapiXLIFF12Parser xliffParser, ProvenanceConfig provConfig) {
-        super(provConfig);
+    public OkapiXLIFF12Writer(OkapiXLIFF12Parser xliffParser) {
+        super();
         this.parser = xliffParser;
     }
 
     public OkapiXLIFF12Parser getParser() {
         return this.parser;
-    }
-
-    @Override
-    public void updateSegment(OcelotSegment seg, SegmentController segController) {
-        Preconditions.checkState(seg instanceof OkapiXLIFF12Segment,
-                "Unexpected non-XLIFF 1.2 segment %s", seg);
-        ITextUnit textUnit = ((OkapiXLIFF12Segment)seg).getTextUnit();
-        String rwRef = "RW" + seg.getSegmentNumber();
-        updateITSLQIAnnotations(textUnit, seg, rwRef);
-
-        ITSProvenanceAnnotations provAnns = addRWProvenance(seg);
-        textUnit.setProperty(new Property(Property.ITS_PROV, " its:provenanceRecordsRef=\"#" + rwRef + "\""));
-        provAnns.setData(rwRef);
-        textUnit.setAnnotation(provAnns);
-
-        if (seg.hasOriginalTarget()) {
-            // Make sure the Okapi Event is aware that the target has changed.
-            textUnit.setTarget(LocaleId.fromString(segController.getFileTargetLang()), unwrap(seg.getTarget()));
-            updateOriginalTarget(seg, segController);
-        }
-    }
-
-    void updateITSLQIAnnotations(ITextUnit tu, OcelotSegment seg, String rwRef) {
-        ITSLQIAnnotations lqiAnns = new ITSLQIAnnotations();
-        for (LanguageQualityIssue lqi : seg.getLQI()) {
-            GenericAnnotation ga = new GenericAnnotation(GenericAnnotationType.LQI,
-                    GenericAnnotationType.LQI_TYPE, lqi.getType(),
-                    GenericAnnotationType.LQI_COMMENT, lqi.getComment(),
-                    GenericAnnotationType.LQI_SEVERITY, lqi.getSeverity(),
-                    GenericAnnotationType.LQI_ENABLED, lqi.isEnabled());
-            lqiAnns.add(ga);
-        }
-
-        if (lqiAnns.size() > 0) {
-            tu.setProperty(new Property(Property.ITS_LQI, " its:locQualityIssuesRef=\"#"+rwRef+"\""));
-            tu.setAnnotation(lqiAnns);
-        } else {
-            tu.setProperty(new Property(Property.ITS_LQI, ""));
-            tu.setAnnotation(null);
-        }
-        lqiAnns.setData(rwRef);
-
-        removeITSLQITextUnitSourceAnnotations(tu, seg);
-        removeITSLQITextUnitTargetAnnotations(tu, seg);
-    }
-
-    private TextContainer unwrap(SegmentVariant v) {
-        return ((TextContainerVariant)v).getTextContainer();
-    }
-
-    void removeITSLQITextUnitSourceAnnotations(ITextUnit tu, OcelotSegment seg) {
-        TextContainer tc = unwrap(seg.getSource());
-        tc.setProperty(new Property(Property.ITS_LQI, ""));
-        tc.setAnnotation(null);
-        tu.setSource(tc);
-    }
-
-    void removeITSLQITextUnitTargetAnnotations(ITextUnit tu, OcelotSegment seg) {
-        Set<LocaleId> targetLocales = tu.getTargetLocales();
-        if (targetLocales.size() == 1) {
-            for (LocaleId tgt : targetLocales) {
-                TextContainer tgtTC = tu.getTarget(tgt);
-                tgtTC.setProperty(new Property(Property.ITS_LQI, ""));
-                tgtTC.setAnnotation(null);
-                tu.setTarget(tgt, tgtTC);
-            }
-        } else if (targetLocales.isEmpty()) {
-            tu.setTarget(LocaleId.fromString(parser.getTargetLang()), 
-                         unwrap(seg.getTarget()));
-
-        } else {
-            LOG.warn("Only 1 target locale in text-unit is currently supported");
-        }
-    }
-
-    /**
-     * Add an alt-trans containing the original target if one from this tool
-     * doesn't exist already.
-     * @param seg - Segment edited
-     * @param segController
-     */
-    public void updateOriginalTarget(OcelotSegment seg, SegmentController segController) {
-        TextContainer segTarget = unwrap(seg.getTarget());
-        TextContainer segSource = unwrap(seg.getSource());
-        TextContainer segOriTarget = unwrap(seg.getOriginalTarget());
-        TextContainer oriTarget = getParser().retrieveOriginalTarget(segTarget);
-        if (oriTarget == null) {
-            AltTranslation rwbAltTrans = new AltTranslation(LocaleId.fromString(segController.getFileSourceLang()),
-                    LocaleId.fromString(segController.getFileTargetLang()), null,
-                    segSource.getUnSegmentedContentCopy(), segOriTarget.getUnSegmentedContentCopy(),
-                    MatchType.EXACT, 100, "Ocelot");
-            XLIFFTool rwbAltTool = new XLIFFTool("Ocelot", "Ocelot");
-            rwbAltTrans.setTool(rwbAltTool);
-            AltTranslationsAnnotation altTrans = segTarget.getAnnotation(AltTranslationsAnnotation.class);
-            altTrans = altTrans == null ? new AltTranslationsAnnotation() : altTrans;
-            altTrans.add(rwbAltTrans);
-            segTarget.setAnnotation(altTrans);
-        }
     }
 
     @Override

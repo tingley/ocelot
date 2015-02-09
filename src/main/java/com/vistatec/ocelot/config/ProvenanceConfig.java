@@ -8,6 +8,9 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.vistatec.ocelot.its.Provenance;
+import com.vistatec.ocelot.its.ProvenanceFactory;
+
 /**
  * Class that manages user-configured provenance information.
  */
@@ -42,13 +45,25 @@ public class ProvenanceConfig {
         return getUserProvenance().isEmpty();
     }
 
-    public UserProvenance getUserProvenance() {
-        return new UserProvenance(p.getProperty("revPerson"),
-                                  p.getProperty("revOrganization"),
-                                  p.getProperty("externalReference"));
+    protected String getRevPerson() {
+        return p.getProperty("revPerson");
     }
 
-    public void save(UserProvenance prov) throws IOException {
+    protected String getRevOrg() {
+        return p.getProperty("revOrganization");
+    }
+
+    protected String getExternalReference() {
+        return p.getProperty("externalReference");
+    }
+
+    public Provenance getUserProvenance() {
+        return ProvenanceFactory.fromUserFields(getRevPerson(),
+                                                getRevOrg(),
+                                                getExternalReference());
+    }
+
+    public void save(Provenance prov) throws IOException {
         p.setProperty("revPerson", prov.getRevPerson());
         p.setProperty("revOrganization", prov.getRevOrg());
         p.setProperty("externalReference", prov.getProvRef());

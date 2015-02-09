@@ -4,15 +4,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.EventBus;
+import com.vistatec.ocelot.config.ConfigsForProvTesting;
+import com.vistatec.ocelot.config.ProvenanceConfig;
+import com.vistatec.ocelot.its.stats.ITSDocStats;
+import com.vistatec.ocelot.segment.okapi.OkapiXLIFFFactory;
 
 /**
  * Other tests in SegmentController are also relevant to Segment
  * functionality.
  */
 public class TestSegment {
+    private static SegmentController segController;
+    @BeforeClass
+    public static void setup() {
+        segController = new SegmentController(
+                new OkapiXLIFFFactory(), new EventBus(), new ITSDocStats(),
+                new ProvenanceConfig(new ConfigsForProvTesting("revPerson=q", null)));
+    }
 
     @Test
     public void testMultipleSegmentUpdates() throws Exception {
@@ -68,7 +81,9 @@ public class TestSegment {
     private static int nextSegmentId = 1;
     public static OcelotSegment newSegment() {
         int id = nextSegmentId++;
-        return new SimpleSegment(id, new SimpleSegmentVariant("source"),
+        OcelotSegment seg = new SimpleSegment(id, new SimpleSegmentVariant("source"),
                 new SimpleSegmentVariant("target"), null);
+        seg.setSegmentController(segController);
+        return seg;
     }
 }

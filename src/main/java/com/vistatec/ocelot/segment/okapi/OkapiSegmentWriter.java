@@ -28,13 +28,6 @@
  */
 package com.vistatec.ocelot.segment.okapi;
 
-import com.vistatec.ocelot.ObjectUtils;
-import com.vistatec.ocelot.config.ProvenanceConfig;
-import com.vistatec.ocelot.config.UserProvenance;
-import com.vistatec.ocelot.its.Provenance;
-import com.vistatec.ocelot.segment.OcelotSegment;
-import com.vistatec.ocelot.segment.SegmentController;
-
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -46,9 +39,6 @@ import java.util.List;
 
 import net.sf.okapi.common.Event;
 import net.sf.okapi.common.LocaleId;
-import net.sf.okapi.common.annotation.GenericAnnotation;
-import net.sf.okapi.common.annotation.GenericAnnotationType;
-import net.sf.okapi.common.annotation.ITSProvenanceAnnotations;
 import net.sf.okapi.common.encoder.EncoderManager;
 import net.sf.okapi.common.filters.IFilter;
 import net.sf.okapi.common.resource.DocumentPart;
@@ -59,49 +49,8 @@ import net.sf.okapi.common.skeleton.ISkeletonWriter;
  * workbench segments as different file formats.
  */
 public abstract class OkapiSegmentWriter {
-    public abstract void updateSegment(OcelotSegment seg, SegmentController segController);
-    private ProvenanceConfig provConfig;
 
-    public OkapiSegmentWriter(ProvenanceConfig provConfig) {
-        this.provConfig = provConfig;
-    }
-    
-    public ITSProvenanceAnnotations addRWProvenance(OcelotSegment seg) {
-        UserProvenance userProvenance = provConfig.getUserProvenance();
-        ITSProvenanceAnnotations provAnns = new ITSProvenanceAnnotations();
-        for (Provenance prov : seg.getProv()) {
-            String revPerson = prov.getRevPerson();
-            String revOrg = prov.getRevOrg();
-            String provRef = prov.getProvRef();
-            GenericAnnotation ga = new GenericAnnotation(GenericAnnotationType.PROV,
-                    GenericAnnotationType.PROV_PERSON, prov.getPerson(),
-                    GenericAnnotationType.PROV_ORG, prov.getOrg(),
-                    GenericAnnotationType.PROV_TOOL, prov.getTool(),
-                    GenericAnnotationType.PROV_REVPERSON, revPerson,
-                    GenericAnnotationType.PROV_REVORG, revOrg,
-                    GenericAnnotationType.PROV_REVTOOL, prov.getRevTool(),
-                    GenericAnnotationType.PROV_PROVREF, provRef);
-            provAnns.add(ga);
-
-            // Check for existing RW annotation.
-            if (ObjectUtils.safeEquals(prov.getRevPerson(), userProvenance.getRevPerson()) &&
-                ObjectUtils.safeEquals(prov.getRevOrg(), userProvenance.getRevOrg()) &&
-                ObjectUtils.safeEquals(prov.getProvRef(), userProvenance.getProvRef())) {
-                seg.setAddedRWProvenance(true);
-            }
-        }
-
-        if (!seg.addedRWProvenance() && !userProvenance.isEmpty()) {
-            GenericAnnotation provGA = new GenericAnnotation(GenericAnnotationType.PROV,
-                    GenericAnnotationType.PROV_REVPERSON, userProvenance.getRevPerson(),
-                    GenericAnnotationType.PROV_REVORG, userProvenance.getRevOrg(),
-                    GenericAnnotationType.PROV_PROVREF, userProvenance.getProvRef());
-            provAnns.add(provGA);
-            seg.addProvenance(new OkapiProvenance(provGA));
-            seg.setAddedRWProvenance(true);
-        }
-
-        return provAnns;
+    public OkapiSegmentWriter() {
     }
 
     public void saveEvents(IFilter filter, List<Event> events, String output, LocaleId locId) throws UnsupportedEncodingException, FileNotFoundException, IOException {

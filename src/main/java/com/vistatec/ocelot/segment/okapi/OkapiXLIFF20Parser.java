@@ -30,6 +30,7 @@ package com.vistatec.ocelot.segment.okapi;
 
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.Provenance;
+import com.vistatec.ocelot.its.ProvenanceFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -217,10 +218,10 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
                         if (itsProvItem.isGroup()) {
                             Provenances provMetadata = (Provenances) itsProvItem;
                             for (net.sf.okapi.lib.xliff2.its.Provenance p : provMetadata.getList()) {
-                                ocelotProvList.add(new OkapiProvenance(p));
+                                ocelotProvList.add(ProvenanceFactory.fromOkapiXLIFF20Provenance(p));
                             }
                         } else {
-                            ocelotProvList.add(new OkapiProvenance(
+                            ocelotProvList.add(ProvenanceFactory.fromOkapiXLIFF20Provenance(
                                     (net.sf.okapi.lib.xliff2.its.Provenance) itsProvItem));
                         }
                     }

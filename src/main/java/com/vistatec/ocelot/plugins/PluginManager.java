@@ -164,7 +164,7 @@ public class PluginManager {
             for (int row = 0; row < segments.getNumSegments(); row++) {
                 OcelotSegment seg = segments.getSegment(row);
                 List<LanguageQualityIssue> lqi = seg.getLQI();
-                List<Provenance> prov = seg.getProv();
+                List<Provenance> prov = seg.getProvenance();
                 for (ITSPlugin plugin : getEnabledITSPlugins()) {
                     try {
                         plugin.sendLQIData(sourceLang, targetLang,

@@ -48,10 +48,6 @@ public class SimpleXLIFFFactory implements XLIFFFactory {
             ProvenanceConfig config) {
         return new XLIFFWriter() {
             @Override
-            public void updateSegment(OcelotSegment seg, SegmentController controller) {
-            }
-
-            @Override
             public void save(File file) throws IOException,
                     UnsupportedEncodingException {
             }

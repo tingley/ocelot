@@ -1,61 +1,73 @@
 package com.vistatec.ocelot.segment.okapi;
 
+import net.sf.okapi.common.LocaleId;
 import net.sf.okapi.common.annotation.GenericAnnotation;
 import net.sf.okapi.common.annotation.GenericAnnotationType;
 import net.sf.okapi.common.annotation.ITSProvenanceAnnotations;
+import net.sf.okapi.common.resource.TextContainer;
+import net.sf.okapi.common.resource.TextUnit;
 
 import org.junit.*;
 
 import com.vistatec.ocelot.config.ProvenanceConfig;
-import com.vistatec.ocelot.config.UserProvenance;
-import com.vistatec.ocelot.segment.OcelotSegment;
-import com.vistatec.ocelot.segment.SegmentController;
-import com.vistatec.ocelot.segment.SimpleSegment;
+import com.vistatec.ocelot.its.Provenance;
+import com.vistatec.ocelot.its.ProvenanceFactory;
 
 import static org.junit.Assert.*;
 
 public class TestOkapiSegmentWriter {
 
+    private OkapiXLIFF12Segment emptySegment() {
+        return new OkapiXLIFF12Segment(1, new TextContainerVariant(new TextContainer()),
+                new TextContainerVariant(new TextContainer()),
+                new TextContainerVariant(new TextContainer()), new TextUnit(), LocaleId.FRENCH);
+    }
+
     @Test
     public void testMissingProvenance() {
-        OcelotSegment seg = new SimpleSegment();
-        seg.addProvenance(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
+        OkapiXLIFF12Segment seg = emptySegment();
+        seg.addProvenance(ProvenanceFactory.fromOkapiXLIFF12Annotation(new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_REVORG, "S",
                 GenericAnnotationType.PROV_REVPERSON, "T",
                 GenericAnnotationType.PROV_PROVREF, "X")));
         // pass empty provenance properties
-        TestSegmentWriter segmentWriter = new TestSegmentWriter(new TestProvenanceConfig(null, null, null));
+        ProvenanceConfig config = new TestProvenanceConfig(null, null, null);
+        Provenance prov = config.getUserProvenance();
         // OC-16: make sure this doesn't crash
-        ITSProvenanceAnnotations provAnns = segmentWriter.addRWProvenance(seg);
+        seg.addProvenance(prov);
+        ITSProvenanceAnnotations provAnns = seg.getProvenanceAnnotations("RW1");
         // We shouldn't add a second annotation record for our empty user provenance
         assertEquals(1, provAnns.getAnnotations("its-prov").size());
 
         // Do it again, make sure it doesn't crash
-        ITSProvenanceAnnotations provAnns2 = segmentWriter.addRWProvenance(seg);
+        seg.addProvenance(prov);
+        ITSProvenanceAnnotations provAnns2 = seg.getProvenanceAnnotations("RW1");
         assertEquals(1, provAnns2.getAnnotations("its-prov").size());
     }
 
     @Test
     public void testDontAddRedundantProvenance() throws Exception {
-        OcelotSegment seg = new SimpleSegment();
-        seg.addProvenance(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
+        OkapiXLIFF12Segment seg = emptySegment();
+        seg.addProvenance(ProvenanceFactory.fromOkapiXLIFF12Annotation(new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_REVORG, "S",
                 GenericAnnotationType.PROV_REVPERSON, "T",
                 GenericAnnotationType.PROV_PROVREF, "X")));
-        TestSegmentWriter segmentWriter = new TestSegmentWriter(new TestProvenanceConfig("T", "S", "X"));
-        ITSProvenanceAnnotations provAnns = segmentWriter.addRWProvenance(seg);
+        ProvenanceConfig config = new TestProvenanceConfig("T", "S", "X");
+        seg.addProvenance(config.getUserProvenance());
+        ITSProvenanceAnnotations provAnns = seg.getProvenanceAnnotations("RW1");
         assertEquals(1, provAnns.getAnnotations("its-prov").size());
     }
 
     @Test
     public void testAddUserProvenance() throws Exception {
-        OcelotSegment seg = new SimpleSegment();
-        seg.addProvenance(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
+        OkapiXLIFF12Segment seg = emptySegment();
+        seg.addProvenance(ProvenanceFactory.fromOkapiXLIFF12Annotation(new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_REVORG, "S",
                 GenericAnnotationType.PROV_REVPERSON, "T",
                 GenericAnnotationType.PROV_PROVREF, "X")));
-        TestSegmentWriter segmentWriter = new TestSegmentWriter(new TestProvenanceConfig("A", "B", "C"));
-        ITSProvenanceAnnotations provAnns = segmentWriter.addRWProvenance(seg);
+        ProvenanceConfig config = new TestProvenanceConfig("A", "B", "C");
+        seg.addProvenance(config.getUserProvenance());
+        ITSProvenanceAnnotations provAnns = seg.getProvenanceAnnotations("RW1");
         assertEquals(2, provAnns.getAnnotations("its-prov").size());
         GenericAnnotation origAnno = provAnns.getAnnotations("its-prov").get(0);
         assertEquals("T", origAnno.getString(GenericAnnotationType.PROV_REVPERSON));
@@ -76,17 +88,22 @@ public class TestOkapiSegmentWriter {
             this.extRef = extRef;
         }
         @Override
-        public UserProvenance getUserProvenance() {
-            return new UserProvenance(revPerson, revOrg, extRef);
+        protected String getRevPerson() {
+            return revPerson;
+        }
+        @Override
+        protected String getRevOrg() {
+            return revOrg;
+        }
+        @Override
+        protected String getExternalReference() {
+            return extRef;
         }
     }
 
     class TestSegmentWriter extends OkapiSegmentWriter {
-        TestSegmentWriter(ProvenanceConfig config) {
-            super(config);
-        }
-        @Override
-        public void updateSegment(OcelotSegment seg, SegmentController segController) {
+        TestSegmentWriter() {
+            super();
         }
     }
 }

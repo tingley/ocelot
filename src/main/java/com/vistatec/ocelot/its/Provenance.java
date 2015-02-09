@@ -28,13 +28,17 @@
  */
 package com.vistatec.ocelot.its;
 
+import com.vistatec.ocelot.ObjectUtils;
 import com.vistatec.ocelot.rules.DataCategoryField;
+
 import java.util.EnumMap;
 import java.util.Map;
+
+import net.sf.okapi.common.HashCodeUtil;
 /**
  * Represents Provenance Data Category in the ITS 2.0 spec.
  */
-public abstract class Provenance extends ITSMetadata {
+public class Provenance extends ITSMetadata {
     private String person, org, tool, revPerson, revOrg, revTool, provRef, recsRef;
 
     public Provenance() { }
@@ -115,5 +119,39 @@ public abstract class Provenance extends ITSMetadata {
         map.put(DataCategoryField.PROV_REVTOOL, revTool);
         map.put(DataCategoryField.PROV_PROVREF, provRef);
         return map;
+    }
+
+    /**
+     * Returns true if this provenance object contains no actual information.
+     * @return
+     */
+    public boolean isEmpty() {
+        return org == null && person == null && tool == null &&
+               revOrg == null && revPerson == null && revTool == null && provRef == null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (o == null || !(o instanceof Provenance)) return false;
+        Provenance prov = (Provenance)o;
+        return ObjectUtils.safeEquals(prov.org, org) &&
+               ObjectUtils.safeEquals(prov.person, person) &&
+               ObjectUtils.safeEquals(prov.tool, tool) &&
+               ObjectUtils.safeEquals(prov.revOrg, revOrg) &&
+               ObjectUtils.safeEquals(prov.revPerson, revPerson) &&
+               ObjectUtils.safeEquals(prov.revTool, revTool) &&
+               ObjectUtils.safeEquals(prov.provRef, provRef);
+    }
+
+    @Override
+    public int hashCode() {
+        int h = HashCodeUtil.hash(HashCodeUtil.SEED, org);
+        h = HashCodeUtil.hash(h, person);
+        h = HashCodeUtil.hash(h, tool);
+        h = HashCodeUtil.hash(h, revOrg);
+        h = HashCodeUtil.hash(h, revPerson);
+        h = HashCodeUtil.hash(h, revTool);
+        return HashCodeUtil.hash(h, provRef);
     }
 }

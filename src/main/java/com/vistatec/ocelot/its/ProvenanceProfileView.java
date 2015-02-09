@@ -44,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vistatec.ocelot.config.ProvenanceConfig;
-import com.vistatec.ocelot.config.UserProvenance;
 import com.vistatec.ocelot.ui.ODialogPanel;
 
 /**
@@ -57,7 +56,7 @@ public class ProvenanceProfileView extends ODialogPanel implements ActionListene
     private JTextField inputRevPerson, inputRevOrg, inputExtRef;
     private JButton save;
     private ProvenanceConfig config;
-    private UserProvenance prov;
+    private Provenance prov;
 
     public ProvenanceProfileView(ProvenanceConfig config) {
         super(new GridBagLayout());

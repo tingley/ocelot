@@ -72,7 +72,7 @@ public class ProvenanceTableView extends JScrollPane {
         tableSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tableSelectionModel.addListSelectionListener(new ProvSelectionHandler());
 
-        List<Provenance> provData = seg.getProv();
+        List<Provenance> provData = seg.getProvenance();
         provTableModel.setRows(provData);
 
         sort = new TableRowSorter<ProvTableModel>(provTableModel);
