@@ -100,10 +100,4 @@ public class TestOkapiSegmentWriter {
             return extRef;
         }
     }
-
-    class TestSegmentWriter extends OkapiSegmentWriter {
-        TestSegmentWriter() {
-            super();
-        }
-    }
 }
