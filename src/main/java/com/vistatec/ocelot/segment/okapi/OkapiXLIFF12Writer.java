@@ -30,7 +30,7 @@ package com.vistatec.ocelot.segment.okapi;
 
 import com.vistatec.ocelot.config.ProvenanceConfig;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentController;
 import com.vistatec.ocelot.segment.SegmentVariant;
 import com.vistatec.ocelot.segment.XLIFFWriter;
@@ -82,7 +82,7 @@ public class OkapiXLIFF12Writer extends OkapiSegmentWriter implements XLIFFWrite
     }
 
     @Override
-    public void updateSegment(Segment seg, SegmentController segController) {
+    public void updateSegment(OcelotSegment seg, SegmentController segController) {
         Event event = getParser().getSegmentEvent(seg.getSourceEventNumber());
         if (event == null) {
             LOG.error("Failed to find Okapi Event associated with segment #"+seg.getSegmentNumber());
@@ -109,7 +109,7 @@ public class OkapiXLIFF12Writer extends OkapiSegmentWriter implements XLIFFWrite
         }
     }
 
-    void updateITSLQIAnnotations(ITextUnit tu, Segment seg, String rwRef) {
+    void updateITSLQIAnnotations(ITextUnit tu, OcelotSegment seg, String rwRef) {
         ITSLQIAnnotations lqiAnns = new ITSLQIAnnotations();
         for (LanguageQualityIssue lqi : seg.getLQI()) {
             GenericAnnotation ga = new GenericAnnotation(GenericAnnotationType.LQI,
@@ -137,14 +137,14 @@ public class OkapiXLIFF12Writer extends OkapiSegmentWriter implements XLIFFWrite
         return ((TextContainerVariant)v).getTextContainer();
     }
 
-    void removeITSLQITextUnitSourceAnnotations(ITextUnit tu, Segment seg) {
+    void removeITSLQITextUnitSourceAnnotations(ITextUnit tu, OcelotSegment seg) {
         TextContainer tc = unwrap(seg.getSource());
         tc.setProperty(new Property(Property.ITS_LQI, ""));
         tc.setAnnotation(null);
         tu.setSource(tc);
     }
 
-    void removeITSLQITextUnitTargetAnnotations(ITextUnit tu, Segment seg) {
+    void removeITSLQITextUnitTargetAnnotations(ITextUnit tu, OcelotSegment seg) {
         Set<LocaleId> targetLocales = tu.getTargetLocales();
         if (targetLocales.size() == 1) {
             for (LocaleId tgt : targetLocales) {
@@ -168,7 +168,7 @@ public class OkapiXLIFF12Writer extends OkapiSegmentWriter implements XLIFFWrite
      * @param seg - Segment edited
      * @param segController
      */
-    public void updateOriginalTarget(Segment seg, SegmentController segController) {
+    public void updateOriginalTarget(OcelotSegment seg, SegmentController segController) {
         TextContainer segTarget = unwrap(seg.getTarget());
         TextContainer segSource = unwrap(seg.getSource());
         TextContainer segOriTarget = unwrap(seg.getOriginalTarget());

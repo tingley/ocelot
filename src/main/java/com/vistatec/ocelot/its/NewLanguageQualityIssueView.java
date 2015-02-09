@@ -28,7 +28,7 @@
  */
 package com.vistatec.ocelot.its;
 
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -82,7 +82,7 @@ public class NewLanguageQualityIssueView extends JPanel implements Runnable, Act
     private JButton save;
     private JButton cancel;
 
-    private Segment selectedSeg;
+    private OcelotSegment selectedSeg;
     private LanguageQualityIssue selectedLQI;
 
     private String prevType, prevComment;
@@ -249,7 +249,7 @@ public class NewLanguageQualityIssueView extends JPanel implements Runnable, Act
         add(actionPanel, gridBag);
     }
 
-    public void setSegment(Segment seg) {
+    public void setSegment(OcelotSegment seg) {
         this.selectedSeg = seg;
         updateSegment();
     }
@@ -266,7 +266,7 @@ public class NewLanguageQualityIssueView extends JPanel implements Runnable, Act
         save.setEnabled(false);
     }
 
-    public void setMetadata(Segment selectedSegment, LanguageQualityIssue lqi) {
+    public void setMetadata(OcelotSegment selectedSegment, LanguageQualityIssue lqi) {
         setSegment(selectedSegment);
         this.selectedLQI = lqi;
 
@@ -298,7 +298,7 @@ public class NewLanguageQualityIssueView extends JPanel implements Runnable, Act
         enabledFalse.setSelected(!prevEnabled);
     }
 
-    public void setEditableByPhase(Segment selectedSegment) {
+    public void setEditableByPhase(OcelotSegment selectedSegment) {
         typeList.setEnabled(selectedSegment.isEditablePhase());
         severitySpinner.setEnabled(selectedSegment.isEditablePhase());
         profileRefLink.setEnabled(selectedSegment.isEditablePhase());

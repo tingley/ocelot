@@ -34,7 +34,7 @@ import com.vistatec.ocelot.events.SegmentTargetEnterEvent;
 import com.vistatec.ocelot.events.SegmentTargetExitEvent;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.Provenance;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentModel;
 
 import java.security.AccessController;
@@ -162,7 +162,7 @@ public class PluginManager {
         public void exportData(String sourceLang, String targetLang,
                 SegmentModel segments) {
             for (int row = 0; row < segments.getNumSegments(); row++) {
-                Segment seg = segments.getSegment(row);
+                OcelotSegment seg = segments.getSegment(row);
                 List<LanguageQualityIssue> lqi = seg.getLQI();
                 List<Provenance> prov = seg.getProv();
                 for (ITSPlugin plugin : getEnabledITSPlugins()) {
@@ -185,7 +185,7 @@ public class PluginManager {
          */
         @Subscribe
         public void notifySegmentTargetEnter(SegmentTargetEnterEvent event) {
-            Segment seg = event.getSegment();
+            OcelotSegment seg = event.getSegment();
             for (SegmentPlugin segPlugin : segPlugins.keySet()) {
                 if (isEnabled(segPlugin)) {
                     try {
@@ -204,7 +204,7 @@ public class PluginManager {
          */
         @Subscribe
         public void notifySegmentTargetExit(SegmentTargetExitEvent event) {
-            Segment seg = event.getSegment();
+            OcelotSegment seg = event.getSegment();
             for (SegmentPlugin segPlugin : segPlugins.keySet()) {
                 if (isEnabled(segPlugin)) {
                     try {

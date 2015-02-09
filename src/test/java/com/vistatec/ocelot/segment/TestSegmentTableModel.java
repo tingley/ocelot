@@ -63,7 +63,7 @@ public class TestSegmentTableModel {
     private SegmentModel emptyController() {
         return new SegmentModel() {
             @Override
-            public Segment getSegment(int row) {
+            public OcelotSegment getSegment(int row) {
                 return null;
             }
             

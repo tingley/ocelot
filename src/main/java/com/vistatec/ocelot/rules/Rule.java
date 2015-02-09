@@ -29,7 +29,7 @@
 package com.vistatec.ocelot.rules;
 
 import com.vistatec.ocelot.its.ITSMetadata;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +86,7 @@ public class Rule {
         enabled = flag;
     }
 
-    public List<ITSMetadata> displayMatches(Segment segment) {
+    public List<ITSMetadata> displayMatches(OcelotSegment segment) {
         List<ITSMetadata> itsMatches = new ArrayList<ITSMetadata>();
         for (ITSMetadata its : segment.getAllITSMetadata()) {
             if (matches(its)) {
@@ -100,7 +100,7 @@ public class Rule {
      * The filter matches a segment if all of its rules match some piece of ITS
      * metadata in that segment.
      */
-    public boolean matches(Segment segment) {
+    public boolean matches(OcelotSegment segment) {
         // I need to check each piece of metadata.
         // - If all the rules match that piece, success!
         // - If not all the rules match that piece, continue.

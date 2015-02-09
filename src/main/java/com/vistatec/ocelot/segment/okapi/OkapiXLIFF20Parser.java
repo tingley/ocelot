@@ -37,7 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.XLIFFParser;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -79,8 +79,8 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
     }
 
     @Override
-    public List<Segment> parse(File xliffFile) throws IOException {
-        List<Segment> segments = new LinkedList<Segment>();
+    public List<OcelotSegment> parse(File xliffFile) throws IOException {
+        List<OcelotSegment> segments = new LinkedList<OcelotSegment>();
         segmentEventMapping = new HashMap<Integer, Integer>();
         events = new LinkedList<Event>();
         segmentUnitParts = new LinkedList<>();
@@ -124,9 +124,9 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
      * @return Segment - Ocelot Segment
      * @throws MalformedURLException
      */
-    private Segment convertPartToSegment(net.sf.okapi.lib.xliff2.core.Segment unitPart, int segmentUnitPartIndex) throws MalformedURLException {
+    private OcelotSegment convertPartToSegment(net.sf.okapi.lib.xliff2.core.Segment unitPart, int segmentUnitPartIndex) throws MalformedURLException {
         segmentEventMapping.put(this.documentSegmentNum, this.events.size()-1);
-        Segment seg = new Segment(this.documentSegmentNum++, segmentUnitPartIndex, segmentUnitPartIndex,
+        OcelotSegment seg = new OcelotSegment(this.documentSegmentNum++, segmentUnitPartIndex, segmentUnitPartIndex,
                 new FragmentVariant(unitPart, false),
                 new FragmentVariant(unitPart, true),
                 null); //TODO: load original target from file

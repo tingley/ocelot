@@ -36,7 +36,7 @@ import com.vistatec.ocelot.events.LQIModificationEvent;
 import com.vistatec.ocelot.events.LQISelectionEvent;
 import com.vistatec.ocelot.events.SegmentDeselectionEvent;
 import com.vistatec.ocelot.events.SegmentSelectionEvent;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -60,7 +60,7 @@ public class LanguageQualityIssueTableView extends JScrollPane {
     protected LQITableModel lqiTableModel;
     private TableRowSorter<LQITableModel> sort;
     private EventBus eventBus;
-    private Segment selectedSegment;
+    private OcelotSegment selectedSegment;
     
     public LanguageQualityIssueTableView(EventBus eventBus) {
         this.eventBus = eventBus;

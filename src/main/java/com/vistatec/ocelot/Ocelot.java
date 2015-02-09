@@ -45,7 +45,7 @@ import com.vistatec.ocelot.rules.QuickAdd;
 import com.vistatec.ocelot.rules.QuickAddView;
 import com.vistatec.ocelot.rules.RuleConfiguration;
 import com.vistatec.ocelot.rules.RulesParser;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentAttributeView;
 import com.vistatec.ocelot.segment.SegmentController;
 import com.vistatec.ocelot.segment.SegmentTableModel;
@@ -532,7 +532,7 @@ public class Ocelot extends JPanel implements Runnable, ActionListener, KeyEvent
         if (ke.getID() == KeyEvent.KEY_PRESSED) {
             if (isPlatformKeyDown(ke) && (ke.getKeyCode() >= KeyEvent.VK_0
                     && ke.getKeyCode() <= KeyEvent.VK_9)) {
-                Segment seg = segmentView.getSelectedSegment();
+                OcelotSegment seg = segmentView.getSelectedSegment();
                 QuickAdd qa = ruleConfig.getQuickAddLQI(ke.getKeyCode() - KeyEvent.VK_0);
                 if (seg != null && qa != null && seg.isEditablePhase()) {
                     seg.addLQI(qa.createLQI());

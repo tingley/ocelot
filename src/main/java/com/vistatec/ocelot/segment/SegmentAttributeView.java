@@ -60,7 +60,7 @@ public class SegmentAttributeView extends JTabbedPane {
     protected LanguageQualityIssueTableView lqiTableView;
     protected ProvenanceTableView provTableView;
     protected OtherITSTableView itsTableView;
-    private Segment selectedSegment;
+    private OcelotSegment selectedSegment;
 
     @Inject
     public SegmentAttributeView(EventBus eventBus, ITSDocStats docStats) {
@@ -93,7 +93,7 @@ public class SegmentAttributeView extends JTabbedPane {
         eventBus.register(this);
     }
 
-    public Segment getSelectedSegment() {
+    public OcelotSegment getSelectedSegment() {
         return this.selectedSegment;
     }
 

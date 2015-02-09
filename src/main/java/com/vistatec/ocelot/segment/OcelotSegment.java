@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Represents source, target segments with ITS metadata
  */
-public class Segment {
+public class OcelotSegment {
     private int segmentNumber, srcEventNum, tgtEventNum;
     private SegmentVariant source, target;
     private String phase_name;
@@ -57,9 +57,9 @@ public class Segment {
     private SegmentVariant originalTarget;
     private ArrayList<String> targetDiff = new ArrayList<String>();
 
-    public Segment() { }
+    public OcelotSegment() { }
 
-    public Segment(int segNum, int srcEventNum, int tgtEventNum,
+    public OcelotSegment(int segNum, int srcEventNum, int tgtEventNum,
             SegmentVariant source, SegmentVariant target, SegmentVariant originalTarget) {
         this.segmentNumber = segNum;
         this.srcEventNum = srcEventNum;
@@ -155,13 +155,6 @@ public class Segment {
     /**
      * XLIFF specific fields.
      */
-    public String getFileOriginal() {
-        return this.fileOriginal;
-    }
-
-    public void setFileOriginal(String fileOri) {
-        this.fileOriginal = fileOri;
-    }
 
     public String getTransUnitId() {
         return this.transUnitId;

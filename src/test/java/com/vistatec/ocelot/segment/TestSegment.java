@@ -18,7 +18,7 @@ public class TestSegment {
 
     @Test
     public void testMultipleSegmentUpdates() throws Exception {
-        Segment seg = newSegment();
+        OcelotSegment seg = newSegment();
         SegmentVariant originalTarget = seg.getTarget();
         SegmentVariant newTarget1 = new SimpleSegmentVariant("update1");
         seg.updateTarget(newTarget1);
@@ -33,7 +33,7 @@ public class TestSegment {
 
     @Test
     public void testResetTarget() {
-        Segment seg = newSegment();
+        OcelotSegment seg = newSegment();
         seg.updateTarget(new SimpleSegmentVariant("update"));
         assertTrue(seg.hasOriginalTarget());
         assertEquals("update", seg.getTarget().getDisplayText());
@@ -51,14 +51,14 @@ public class TestSegment {
 
     @Test
     public void testResetWithNoOriginalTarget() {
-        Segment seg = newSegment();
+        OcelotSegment seg = newSegment();
         seg.resetTarget();
         assertEquals("target", seg.getTarget().getDisplayText());
     }
 
     @Test
     public void testTargetChangesAffectEditDistance() {
-        Segment seg = newSegment();
+        OcelotSegment seg = newSegment();
         seg.updateTarget(new SimpleSegmentVariant("targetA"));
         assertEquals(1, seg.getEditDistance());
         seg.updateTarget(new SimpleSegmentVariant("targetAB"));
@@ -68,9 +68,9 @@ public class TestSegment {
     }
 
     private static int nextSegmentId = 1;
-    public static Segment newSegment() {
+    public static OcelotSegment newSegment() {
         int id = nextSegmentId++;
-        return new Segment(id, id, id, new SimpleSegmentVariant("source"),
+        return new OcelotSegment(id, id, id, new SimpleSegmentVariant("source"),
                 new SimpleSegmentVariant("target"), null);
     }
 }

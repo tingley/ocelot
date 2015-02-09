@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * segment model and generates most segment-related events.
  */
 public class SegmentController implements SegmentModel {
-    private ArrayList<Segment> segments = new ArrayList<Segment>(100);
+    private ArrayList<OcelotSegment> segments = new ArrayList<OcelotSegment>(100);
 
     private XLIFFFactory xliffFactory;
     private XLIFFWriter segmentWriter;
@@ -89,7 +89,7 @@ public class SegmentController implements SegmentModel {
     }
 
     @Override
-    public Segment getSegment(int row) {
+    public OcelotSegment getSegment(int row) {
         return segments.get(row);
     }
 
@@ -110,7 +110,7 @@ public class SegmentController implements SegmentModel {
         return docStats;
     }
     
-    protected void notifyResetTarget(Segment seg) {
+    protected void notifyResetTarget(OcelotSegment seg) {
         eventBus.post(new SegmentTargetResetEvent(seg));
     }
 
@@ -125,7 +125,7 @@ public class SegmentController implements SegmentModel {
 
     private void recalculateDocStats() {
         docStats.clear();
-        for (Segment seg : segments) {
+        for (OcelotSegment seg : segments) {
             for (LanguageQualityIssue lqi : seg.getLQI()) {
                 docStats.addLQIStats(lqi);
             }
@@ -136,14 +136,14 @@ public class SegmentController implements SegmentModel {
         eventBus.post(new ITSDocStatsChangedEvent());
     }
 
-    void notifyModifiedLQI(LanguageQualityIssue lqi, Segment seg) {
+    void notifyModifiedLQI(LanguageQualityIssue lqi, OcelotSegment seg) {
         updateSegment(seg);
         docStats.addLQIStats(lqi);
         eventBus.post(new ITSDocStatsChangedEvent());
         eventBus.post(new LQIModificationEvent(lqi, seg));
     }
 
-    void notifyRemovedLQI(LanguageQualityIssue lqi, Segment seg) {
+    void notifyRemovedLQI(LanguageQualityIssue lqi, OcelotSegment seg) {
         updateSegment(seg);
         recalculateDocStats();
         eventBus.post(new LQIModificationEvent(lqi, seg));
@@ -155,7 +155,7 @@ public class SegmentController implements SegmentModel {
         eventBus.post(new ITSDocStatsChangedEvent());
     }
 
-    public void notifyUpdateSegment(Segment seg) {
+    public void notifyUpdateSegment(OcelotSegment seg) {
         updateSegment(seg);
         eventBus.post(new SegmentEditEvent(seg));
     }
@@ -170,7 +170,7 @@ public class SegmentController implements SegmentModel {
 
     public void parseXLIFFFile(File xliffFile, File detectVersion) throws IOException, FileNotFoundException, XMLStreamException {
         XLIFFParser newParser = xliffFactory.newXLIFFParser(detectVersion);
-        List<Segment> xliffSegments = newParser.parse(xliffFile);
+        List<OcelotSegment> xliffSegments = newParser.parse(xliffFile);
 
         clearAllSegments();
         xliffParser = newParser;
@@ -181,19 +181,19 @@ public class SegmentController implements SegmentModel {
         dirty = false;
     }
 
-    void setSegments(List<Segment> segments) {
-        for (Segment seg : segments) {
+    void setSegments(List<OcelotSegment> segments) {
+        for (OcelotSegment seg : segments) {
             addSegment(seg);
         }
         recalculateDocStats();
     }
 
-    private void addSegment(Segment seg) {
+    private void addSegment(OcelotSegment seg) {
         seg.setSegmentListener(this);
         segments.add(seg);
     }
 
-    public void updateSegment(Segment seg) {
+    public void updateSegment(OcelotSegment seg) {
         segmentWriter.updateSegment(seg, this);
         dirty = true;
     }

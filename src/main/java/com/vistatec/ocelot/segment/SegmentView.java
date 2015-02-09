@@ -332,8 +332,8 @@ public class SegmentView extends JScrollPane implements RuleListener {
         return Math.max(previousHeight, segmentCell.getPreferredSize().height);
     }
     
-    public Segment getSelectedSegment() {
-        Segment selectedSeg = null;
+    public OcelotSegment getSelectedSegment() {
+        OcelotSegment selectedSeg = null;
         if (sourceTargetTable.getSelectedRow() >= 0) {
             selectedSeg = segmentTableModel.getSegment(sort.convertRowIndexToModel(
                 sourceTargetTable.getSelectedRow()));
@@ -342,7 +342,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
     }
 
     public void selectedSegment() {
-        Segment seg = getSelectedSegment();
+        OcelotSegment seg = getSelectedSegment();
         if (seg != null) {
             int colIndex = sourceTargetTable.getSelectedColumn();
             SegmentViewColumn col = segmentTableModel.getColumn(colIndex);
@@ -367,7 +367,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
 
     @Subscribe
     public void addQuickAdd(QuickAddEvent event) {
-        Segment seg = getSelectedSegment();
+        OcelotSegment seg = getSelectedSegment();
         if (seg != null && seg.isEditablePhase()) {
             LanguageQualityIssue lqi = event.getQuickAdd().createLQI();
             seg.addLQI(lqi);
@@ -406,7 +406,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
         reloadTable();
     }
 
-    private void postSegmentSelection(Segment seg) {
+    private void postSegmentSelection(OcelotSegment seg) {
         if (seg != null) {
             eventBus.post(new SegmentSelectionEvent(seg));
         }
@@ -422,7 +422,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
             boolean isSelected, boolean hasFocus, int row, int col) {
             SegmentTextCell renderTextPane = new SegmentTextCell();
             if (segmentTableModel.getRowCount() > row) {
-                Segment seg = segmentTableModel.getSegment(sort.convertRowIndexToModel(row));
+                OcelotSegment seg = segmentTableModel.getSegment(sort.convertRowIndexToModel(row));
                 SegmentVariant v = null;
                 if (segmentTableModel.getSegmentSourceColumnIndex() == col) {
                     v = seg.getSource();
@@ -478,7 +478,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
             setOpaque(true);
         }
 
-        private Color getSegmentColor(Segment seg) {
+        private Color getSegmentColor(OcelotSegment seg) {
             StateQualifier sq = seg.getStateQualifier();
             if (sq != null) {
                 Color sqColor = ruleConfig.getStateQualifierColor(sq);
@@ -493,7 +493,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
         @Override
         public Component getTableCellRendererComponent(JTable jtable, Object obj, boolean isSelected, boolean hasFocus, int row, int col) {
             Integer segNum = (Integer) obj;
-            Segment seg = segmentTableModel.getSegment(sort.convertRowIndexToModel(row));
+            OcelotSegment seg = segmentTableModel.getSegment(sort.convertRowIndexToModel(row));
 
             Color background = getSegmentColor(seg);
             background = background != null ? background :
@@ -531,7 +531,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
         @Override
         public Component getTableCellEditorComponent(JTable jtable, Object value,
             boolean isSelected, int row, int col) {
-            Segment seg = segmentTableModel.getSegment(sort.convertRowIndexToModel(row));
+            OcelotSegment seg = segmentTableModel.getSegment(sort.convertRowIndexToModel(row));
             editListener.setBeginEdit(seg, seg.getTarget().getDisplayText());
             editorComponent = new SegmentTextCell(seg.getTarget().createCopy(), false);
             editorComponent.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "finish");
@@ -574,9 +574,9 @@ public class SegmentView extends JScrollPane implements RuleListener {
     }
 
     public class SegmentCellEditorListener implements CellEditorListener {
-        private Segment seg;
+        private OcelotSegment seg;
 
-        public void setBeginEdit(Segment seg, String codedText) {
+        public void setBeginEdit(OcelotSegment seg, String codedText) {
             this.seg = seg;
             eventBus.post(new SegmentTargetEnterEvent(seg));
         }
@@ -615,7 +615,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
         }
 
         public void displayContextMenu(MouseEvent e) {
-            Segment seg = null;
+            OcelotSegment seg = null;
             int r = sourceTargetTable.rowAtPoint(e.getPoint());
             if (r >= 0 && r < sourceTargetTable.getRowCount()) {
                 sourceTargetTable.setRowSelectionInterval(r, r);

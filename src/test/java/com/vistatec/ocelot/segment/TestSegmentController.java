@@ -43,7 +43,7 @@ public class TestSegmentController {
     }
 
     private SegmentController emptyController() throws Exception {
-        SegmentController controller = new SegmentController(new SimpleXLIFFFactory("en", "fr", new ArrayList<Segment>()),
+        SegmentController controller = new SegmentController(new SimpleXLIFFFactory("en", "fr", new ArrayList<OcelotSegment>()),
                 eventBus, new ITSDocStats(),
                 new ProvenanceConfig(new ConfigsForProvTesting("", null)));
         return controller;
@@ -79,7 +79,7 @@ public class TestSegmentController {
         SegmentController controller = emptyController();
         ITSDocStats stats = controller.getStats();
         assertEquals(0, stats.getStats().size());
-        Segment seg = TestSegment.newSegment();
+        OcelotSegment seg = TestSegment.newSegment();
         LanguageQualityIssue lqi = RulesTestHelpers.lqi("omission", 85);
         seg.addLQI(lqi);
         controller.setSegments(Collections.singletonList(seg));
@@ -91,7 +91,7 @@ public class TestSegmentController {
         SegmentController controller = emptyController();
         ITSDocStats stats = controller.getStats();
         List<ITSStats> expectedStats = Lists.newArrayList();
-        Segment seg = new Segment();
+        OcelotSegment seg = new OcelotSegment();
         seg.addProvenance(new UserProvenance("a", "b", "c"));
         controller.setSegments(Collections.singletonList(seg));
         expectedStats.add(new ProvenanceStats(ProvenanceStats.Type.revPerson, "a"));
@@ -110,7 +110,7 @@ public class TestSegmentController {
         DocStatsUpdateListener statsListener = new DocStatsUpdateListener();
         eventBus.register(lqiListener);
         eventBus.register(statsListener);
-        Segment seg = TestSegment.newSegment();
+        OcelotSegment seg = TestSegment.newSegment();
         controller.setSegments(Collections.singletonList(seg));
         // Stats changed when we set segments
         assertEquals(1, statsListener.callbackCount);
@@ -139,7 +139,7 @@ public class TestSegmentController {
         ITSDocStats stats = controller.getStats();
         ProvenanceAddedListener listener = new ProvenanceAddedListener();
         eventBus.register(listener);
-        Segment seg = TestSegment.newSegment();
+        OcelotSegment seg = TestSegment.newSegment();
         controller.setSegments(Collections.singletonList(seg));
         assertEquals(Collections.emptyList(), stats.getStats());
         Provenance prov = new UserProvenance("a", "b", "c");
@@ -157,7 +157,7 @@ public class TestSegmentController {
         SegmentController controller = emptyController();
         controller.parseXLIFFFile(null, null); // XXX see above
         controller.setSegments(Collections.singletonList(TestSegment.newSegment()));
-        Segment seg = controller.getSegment(0);
+        OcelotSegment seg = controller.getSegment(0);
         ResetTargetListener resetListener = new ResetTargetListener();
         SegmentUpdateListener updateListener = new SegmentUpdateListener();
         eventBus.register(resetListener);

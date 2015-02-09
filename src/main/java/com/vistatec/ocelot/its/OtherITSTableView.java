@@ -32,7 +32,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.vistatec.ocelot.events.SegmentDeselectionEvent;
 import com.vistatec.ocelot.events.SegmentSelectionEvent;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class OtherITSTableView extends JScrollPane {
 
     @Subscribe
     public void setSegment(SegmentSelectionEvent e) {
-        Segment seg = e.getSegment();
+        OcelotSegment seg = e.getSegment();
         setViewportView(null);
         this.itsTableModel = new OtherITSTableModel();
         this.itsTable = new JTable(this.itsTableModel);

@@ -30,7 +30,7 @@ package com.vistatec.ocelot;
 
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.NewLanguageQualityIssueView;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
@@ -46,10 +46,10 @@ public class ContextMenu extends JPopupMenu implements ActionListener {
      */
     private static final long serialVersionUID = 2L;
     private JMenuItem addLQI, removeLQI, resetTarget;
-    private Segment selectedSeg;
+    private OcelotSegment selectedSeg;
     private LanguageQualityIssue selectedLQI;
 
-    public ContextMenu(Segment selectedSeg) {
+    public ContextMenu(OcelotSegment selectedSeg) {
         this.selectedSeg = selectedSeg;
 
         addLQI = new JMenuItem("Add Issue");
@@ -63,7 +63,7 @@ public class ContextMenu extends JPopupMenu implements ActionListener {
         add(resetTarget);
     }
 
-    public ContextMenu(Segment selectedSeg, LanguageQualityIssue selectedLQI) {
+    public ContextMenu(OcelotSegment selectedSeg, LanguageQualityIssue selectedLQI) {
         this(selectedSeg);
         this.selectedLQI = selectedLQI;
 

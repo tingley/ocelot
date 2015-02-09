@@ -33,7 +33,7 @@ import com.vistatec.ocelot.its.OtherITSMetadata;
 import com.vistatec.ocelot.its.Provenance;
 import com.vistatec.ocelot.rules.DataCategoryField;
 import com.vistatec.ocelot.rules.StateQualifier;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.XLIFFParser;
 
 import java.io.File;
@@ -81,7 +81,7 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
     private LinkedList<Event> events;
     private XLIFFFilter filter;
     private int documentSegmentNum;
-    private String sourceLang, targetLang, fileOriginal;
+    private String sourceLang, targetLang;
 
     public OkapiXLIFF12Parser() {}
 
@@ -112,9 +112,9 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
     }
 
     @Override
-    public List<Segment> parse(File xliffFile) throws IOException {
+    public List<OcelotSegment> parse(File xliffFile) throws IOException {
         events = new LinkedList<Event>();
-        List<Segment> segments = new LinkedList<Segment>();
+        List<OcelotSegment> segments = new LinkedList<OcelotSegment>();
         documentSegmentNum = 1;
 
         List<String> locales = FileUtil.guessLanguages(xliffFile.getAbsolutePath());
@@ -133,7 +133,6 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
         this.filter.open(fileDoc);
         int fileEventNum = 0;
 
-        fileOriginal = "";
         while(this.filter.hasNext()) {
             Event event = this.filter.next();
             events.add(event);
@@ -164,7 +163,6 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
                     setTargetLang(fileTargetLang);
                     fileDoc.setTargetLocale(LocaleId.fromString(fileTargetLang));
                 }
-                fileOriginal = fileElement.getName();
 
             } else if (event.isTextUnit()) {
                 ITextUnit tu = (ITextUnit) event.getResource();
@@ -176,7 +174,7 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
         return segments;
     }
 
-    public Segment convertTextUnitToSegment(ITextUnit tu, int fileEventNum) {
+    public OcelotSegment convertTextUnitToSegment(ITextUnit tu, int fileEventNum) {
         TextContainer srcTu = tu.getSource();
         TextContainer tgtTu = new TextContainer();
 
@@ -196,10 +194,9 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
 
         TextContainer oriTgtTu = retrieveOriginalTarget(tgtTu);
 
-        Segment seg = new Segment(documentSegmentNum++, fileEventNum, fileEventNum,
+        OcelotSegment seg = new OcelotSegment(documentSegmentNum++, fileEventNum, fileEventNum,
                 new TextContainerVariant(srcTu), new TextContainerVariant(tgtTu),
                 oriTgtTu != null ? new TextContainerVariant(oriTgtTu) : null);
-        seg.setFileOriginal(fileOriginal);
         seg.setTransUnitId(tu.getId());
         Property stateQualifier = tgtTu.getProperty("state-qualifier");
         if (stateQualifier != null) {
@@ -221,7 +218,7 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
         return seg;
     }
     
-    public void attachITSDataToSegment(Segment seg, ITextUnit tu, TextContainer srcTu, TextContainer tgtTu) {
+    public void attachITSDataToSegment(OcelotSegment seg, ITextUnit tu, TextContainer srcTu, TextContainer tgtTu) {
         ITSLQIAnnotations lqiAnns = retrieveITSLQIAnnotations(tu, srcTu, tgtTu);
         List<LanguageQualityIssue> lqiList = new ArrayList<LanguageQualityIssue>();
         for (GenericAnnotation ga : lqiAnns.getAnnotations(GenericAnnotationType.LQI)) {

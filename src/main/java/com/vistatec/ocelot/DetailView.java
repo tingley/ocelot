@@ -37,7 +37,7 @@ import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.NewLanguageQualityIssueView;
 import com.vistatec.ocelot.its.Provenance;
 import com.vistatec.ocelot.its.ProvenanceView;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentDetailView;
 
 import java.awt.BorderLayout;
@@ -55,7 +55,7 @@ public class DetailView extends JPanel {
     private ProvenanceView provDetailView;
     private SegmentDetailView segDetailView;
     private EventBus eventBus;
-    private Segment selectedSegment;
+    private OcelotSegment selectedSegment;
 
     @Inject
     public DetailView(EventBus eventBus) {

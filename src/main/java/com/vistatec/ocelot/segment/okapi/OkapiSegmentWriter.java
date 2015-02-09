@@ -32,7 +32,7 @@ import com.vistatec.ocelot.ObjectUtils;
 import com.vistatec.ocelot.config.ProvenanceConfig;
 import com.vistatec.ocelot.config.UserProvenance;
 import com.vistatec.ocelot.its.Provenance;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentController;
 
 import java.io.BufferedWriter;
@@ -59,14 +59,14 @@ import net.sf.okapi.common.skeleton.ISkeletonWriter;
  * workbench segments as different file formats.
  */
 public abstract class OkapiSegmentWriter {
-    public abstract void updateSegment(Segment seg, SegmentController segController);
+    public abstract void updateSegment(OcelotSegment seg, SegmentController segController);
     private ProvenanceConfig provConfig;
 
     public OkapiSegmentWriter(ProvenanceConfig provConfig) {
         this.provConfig = provConfig;
     }
     
-    public ITSProvenanceAnnotations addRWProvenance(Segment seg) {
+    public ITSProvenanceAnnotations addRWProvenance(OcelotSegment seg) {
         UserProvenance userProvenance = provConfig.getUserProvenance();
         ITSProvenanceAnnotations provAnns = new ITSProvenanceAnnotations();
         for (Provenance prov : seg.getProv()) {

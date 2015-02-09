@@ -33,7 +33,7 @@ import com.google.common.eventbus.Subscribe;
 import com.vistatec.ocelot.events.ProvenanceSelectionEvent;
 import com.vistatec.ocelot.events.SegmentDeselectionEvent;
 import com.vistatec.ocelot.events.SegmentSelectionEvent;
-import com.vistatec.ocelot.segment.Segment;
+import com.vistatec.ocelot.segment.OcelotSegment;
 
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class ProvenanceTableView extends JScrollPane {
 
     @Subscribe
     public void setSegment(SegmentSelectionEvent e) {
-        Segment seg = e.getSegment();
+        OcelotSegment seg = e.getSegment();
         setViewportView(null);
         provTableModel = new ProvTableModel();
         provTable = new JTable(provTableModel);
