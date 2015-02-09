@@ -28,6 +28,7 @@
  */
 package com.vistatec.ocelot.segment.okapi;
 
+import com.google.common.base.Preconditions;
 import com.vistatec.ocelot.config.ProvenanceConfig;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.segment.OcelotSegment;
@@ -43,7 +44,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.sf.okapi.common.Event;
 import net.sf.okapi.common.LocaleId;
 import net.sf.okapi.common.Namespaces;
 import net.sf.okapi.common.annotation.AltTranslation;
@@ -83,29 +83,21 @@ public class OkapiXLIFF12Writer extends OkapiSegmentWriter implements XLIFFWrite
 
     @Override
     public void updateSegment(OcelotSegment seg, SegmentController segController) {
-        Event event = getParser().getSegmentEvent(seg.getSourceEventNumber());
-        if (event == null) {
-            LOG.error("Failed to find Okapi Event associated with segment #"+seg.getSegmentNumber());
+        Preconditions.checkState(seg instanceof OkapiXLIFF12Segment,
+                "Unexpected non-XLIFF 1.2 segment %s", seg);
+        ITextUnit textUnit = ((OkapiXLIFF12Segment)seg).getTextUnit();
+        String rwRef = "RW" + seg.getSegmentNumber();
+        updateITSLQIAnnotations(textUnit, seg, rwRef);
 
-        } else if (event.isTextUnit()) {
-            ITextUnit textUnit = event.getTextUnit();
-            String rwRef = "RW" + seg.getSegmentNumber();
+        ITSProvenanceAnnotations provAnns = addRWProvenance(seg);
+        textUnit.setProperty(new Property(Property.ITS_PROV, " its:provenanceRecordsRef=\"#" + rwRef + "\""));
+        provAnns.setData(rwRef);
+        textUnit.setAnnotation(provAnns);
 
-            updateITSLQIAnnotations(textUnit, seg, rwRef);
-
-            ITSProvenanceAnnotations provAnns = addRWProvenance(seg);
-            textUnit.setProperty(new Property(Property.ITS_PROV, " its:provenanceRecordsRef=\"#" + rwRef + "\""));
-            provAnns.setData(rwRef);
-            textUnit.setAnnotation(provAnns);
-
-            if (seg.hasOriginalTarget()) {
-                // Make sure the Okapi Event is aware that the target has changed.
-                textUnit.setTarget(LocaleId.fromString(segController.getFileTargetLang()), unwrap(seg.getTarget()));
-                updateOriginalTarget(seg, segController);
-            }
-        } else {
-            LOG.error("Event associated with Segment was not an Okapi TextUnit!");
-            LOG.error("Failed to update event for segment #"+seg.getSegmentNumber());
+        if (seg.hasOriginalTarget()) {
+            // Make sure the Okapi Event is aware that the target has changed.
+            textUnit.setTarget(LocaleId.fromString(segController.getFileTargetLang()), unwrap(seg.getTarget()));
+            updateOriginalTarget(seg, segController);
         }
     }
 

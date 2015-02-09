@@ -39,9 +39,10 @@ import com.vistatec.ocelot.rules.Matchers.NumericMatcher;
 import com.vistatec.ocelot.rules.Matchers.RegexMatcher;
 import com.vistatec.ocelot.rules.RuleConfiguration.FilterMode;
 import com.vistatec.ocelot.rules.RuleConfiguration.StateQualifierMode;
+import com.vistatec.ocelot.segment.SimpleSegment;
 import com.vistatec.ocelot.segment.OcelotSegment;
-import static com.vistatec.ocelot.rules.RulesTestHelpers.lqi;
 
+import static com.vistatec.ocelot.rules.RulesTestHelpers.lqi;
 import static org.junit.Assert.*;
 
 public class TestSegmentSelector {
@@ -53,27 +54,27 @@ public class TestSegmentSelector {
     public static void setup() {
         // I need:
         // - 1 seg with no sq, no filter
-        segPlain = new OcelotSegment();
+        segPlain = new SimpleSegment();
 
         // - 1 seg with [some] sq
-        segSQ = new OcelotSegment();
+        segSQ = new SimpleSegment();
         segSQ.setStateQualifier(StateQualifier.ID);
 
         // - 1 seg with no sq, filter A
-        segA = new OcelotSegment();
+        segA = new SimpleSegment();
         segA.setLQI(Collections.singletonList(lqi("omission", 85)));
 
         // - 1 seg with no sq, filter B
-        segB = new OcelotSegment();
+        segB = new SimpleSegment();
         segB.setLQI(Collections.singletonList(lqi("terminology", 85)));
 
         // - 1 seg with [some] sq, filter A
-        segSQ_A = new OcelotSegment();
+        segSQ_A = new SimpleSegment();
         segSQ_A.setStateQualifier(StateQualifier.ID);
         segSQ_A.setLQI(Collections.singletonList(lqi("omission", 85)));
 
         // - 1 seg with [some] sq, filter B
-        segSQ_B = new OcelotSegment();
+        segSQ_B = new SimpleSegment();
         segSQ_B.setStateQualifier(StateQualifier.ID);
         segSQ_B.setLQI(Collections.singletonList(lqi("terminology", 85)));
 

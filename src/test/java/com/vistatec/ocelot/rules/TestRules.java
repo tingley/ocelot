@@ -49,6 +49,7 @@ import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.OtherITSMetadata;
 import com.vistatec.ocelot.its.Provenance;
 import com.vistatec.ocelot.rules.DataCategoryField.Matcher;
+import com.vistatec.ocelot.segment.SimpleSegment;
 import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentVariant;
 import com.vistatec.ocelot.segment.okapi.OkapiProvenance;
@@ -69,12 +70,8 @@ public class TestRules {
                 GenericAnnotationType.PROV_TOOL, "U"))));
     }
 
-    SegmentVariant emptyVariant() {
-        return new TextContainerVariant(new TextContainer());
-    }
-
     OcelotSegment emptySegment() {
-        return new OcelotSegment(1, 1, 1, emptyVariant(), emptyVariant(), emptyVariant());
+        return new SimpleSegment();
     }
 
     @Test
@@ -136,7 +133,7 @@ public class TestRules {
 		// Tricky!  Make sure we don't get a false positive
 		// because we have an omission AND a valid severity!
 		// (We do have each, but not on the same issue.)
-		segment = new OcelotSegment(6, 6, 6, emptyVariant(), emptyVariant(), emptyVariant());
+		segment = new SimpleSegment(6);
 		segment.setLQI(Lists.newArrayList(lqi2, lqi3));
 		assertFalse(filter.matches(segment));
 	}

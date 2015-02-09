@@ -299,9 +299,9 @@ public class NewLanguageQualityIssueView extends JPanel implements Runnable, Act
     }
 
     public void setEditableByPhase(OcelotSegment selectedSegment) {
-        typeList.setEnabled(selectedSegment.isEditablePhase());
-        severitySpinner.setEnabled(selectedSegment.isEditablePhase());
-        profileRefLink.setEnabled(selectedSegment.isEditablePhase());
+        typeList.setEnabled(selectedSegment.isEditable());
+        severitySpinner.setEnabled(selectedSegment.isEditable());
+        profileRefLink.setEnabled(selectedSegment.isEditable());
     }
 
     public boolean setType(String metadataType) {

@@ -54,7 +54,7 @@ public class ContextMenu extends JPopupMenu implements ActionListener {
 
         addLQI = new JMenuItem("Add Issue");
         addLQI.addActionListener(this);
-        addLQI.setEnabled(selectedSeg.isEditablePhase());
+        addLQI.setEnabled(selectedSeg.isEditable());
         add(addLQI);
 
         resetTarget = new JMenuItem("Reset Target");

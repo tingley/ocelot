@@ -368,7 +368,7 @@ public class SegmentView extends JScrollPane implements RuleListener {
     @Subscribe
     public void addQuickAdd(QuickAddEvent event) {
         OcelotSegment seg = getSelectedSegment();
-        if (seg != null && seg.isEditablePhase()) {
+        if (seg != null && seg.isEditable()) {
             LanguageQualityIssue lqi = event.getQuickAdd().createLQI();
             seg.addLQI(lqi);
             notifyModifiedLQI(new LQIModificationEvent(lqi, seg));
@@ -439,10 +439,10 @@ public class SegmentView extends JScrollPane implements RuleListener {
                     renderTextPane.setTargetDiff(seg.getTargetDiff());
                 }
                 Color background = isSelected ?
-                        seg.isEditablePhase() ? jtable.getSelectionBackground() : Color.LIGHT_GRAY :
+                        seg.isEditable() ? jtable.getSelectionBackground() : Color.LIGHT_GRAY :
                         jtable.getBackground();
 
-                Color foreground = seg.isEditablePhase() ?
+                Color foreground = seg.isEditable() ?
                         isSelected ? jtable.getSelectionForeground() : jtable.getForeground() :
                         Color.GRAY;
 
@@ -498,10 +498,10 @@ public class SegmentView extends JScrollPane implements RuleListener {
             Color background = getSegmentColor(seg);
             background = background != null ? background :
                     isSelected ?
-                        seg.isEditablePhase() ? jtable.getSelectionBackground() : Color.LIGHT_GRAY
+                        seg.isEditable() ? jtable.getSelectionBackground() : Color.LIGHT_GRAY
                         : jtable.getBackground();
 
-            Color foreground = seg.isEditablePhase()
+            Color foreground = seg.isEditable()
                     ? isSelected ? jtable.getSelectionForeground() : jtable.getForeground()
                     : Color.GRAY;
 

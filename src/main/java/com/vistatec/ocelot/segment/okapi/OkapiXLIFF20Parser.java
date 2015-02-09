@@ -30,6 +30,7 @@ package com.vistatec.ocelot.segment.okapi;
 
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.Provenance;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,12 +40,14 @@ import java.util.Map;
 
 import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.XLIFFParser;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import net.sf.okapi.lib.xliff2.core.MTag;
 
+import net.sf.okapi.lib.xliff2.core.MTag;
 import net.sf.okapi.lib.xliff2.core.Part;
+import net.sf.okapi.lib.xliff2.core.Segment;
 import net.sf.okapi.lib.xliff2.core.StartXliffData;
 import net.sf.okapi.lib.xliff2.core.Tag;
 import net.sf.okapi.lib.xliff2.core.TagType;
@@ -61,7 +64,6 @@ import net.sf.okapi.lib.xliff2.reader.XLIFFReader;
  */
 public class OkapiXLIFF20Parser implements XLIFFParser {
     private List<Event> events;
-    private List<net.sf.okapi.lib.xliff2.core.Segment> segmentUnitParts;
     private Map<Integer, Integer> segmentEventMapping;
     private int documentSegmentNum;
     private String sourceLang, targetLang;
@@ -70,20 +72,11 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
         return this.events;
     }
 
-    public Event getSegmentEvent(int segEventNumber) {
-        return this.events.get(segmentEventMapping.get(segEventNumber));
-    }
-
-    public net.sf.okapi.lib.xliff2.core.Segment getSegmentUnitPart(int segmentUnitPartIndex) {
-        return this.segmentUnitParts.get(segmentUnitPartIndex);
-    }
-
     @Override
     public List<OcelotSegment> parse(File xliffFile) throws IOException {
         List<OcelotSegment> segments = new LinkedList<OcelotSegment>();
         segmentEventMapping = new HashMap<Integer, Integer>();
         events = new LinkedList<Event>();
-        segmentUnitParts = new LinkedList<>();
         this.documentSegmentNum = 1;
         int segmentUnitPartIndex = 0;
 
@@ -105,15 +98,15 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
                 Unit unit = event.getUnit();
                 for (Part unitPart : unit) {
                     if (unitPart.isSegment()) {
-                        net.sf.okapi.lib.xliff2.core.Segment okapiSegment =
-                                (net.sf.okapi.lib.xliff2.core.Segment) unitPart;
+                        Segment okapiSegment =
+                                (Segment) unitPart;
                         segments.add(convertPartToSegment(okapiSegment, segmentUnitPartIndex++));
-                        this.segmentUnitParts.add(okapiSegment);
                     }
                 }
             }
 
         }
+        reader.close();
         return segments;
     }
 
@@ -124,12 +117,13 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
      * @return Segment - Ocelot Segment
      * @throws MalformedURLException
      */
-    private OcelotSegment convertPartToSegment(net.sf.okapi.lib.xliff2.core.Segment unitPart, int segmentUnitPartIndex) throws MalformedURLException {
+    private OcelotSegment convertPartToSegment(Segment unitPart, int segmentUnitPartIndex) throws MalformedURLException {
         segmentEventMapping.put(this.documentSegmentNum, this.events.size()-1);
-        OcelotSegment seg = new OcelotSegment(this.documentSegmentNum++, segmentUnitPartIndex, segmentUnitPartIndex,
+        OcelotSegment seg = new OkapiXLIFF20Segment(this.documentSegmentNum++,
                 new FragmentVariant(unitPart, false),
                 new FragmentVariant(unitPart, true),
-                null); //TODO: load original target from file
+                null,
+                unitPart); //TODO: load original target from file
         seg.setLQI(parseLqiData(unitPart));
         seg.setProv(parseProvData(unitPart));
         return seg;

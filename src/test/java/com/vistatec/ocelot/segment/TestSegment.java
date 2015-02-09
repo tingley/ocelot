@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Collections;
-
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -70,7 +68,7 @@ public class TestSegment {
     private static int nextSegmentId = 1;
     public static OcelotSegment newSegment() {
         int id = nextSegmentId++;
-        return new OcelotSegment(id, id, id, new SimpleSegmentVariant("source"),
+        return new SimpleSegment(id, new SimpleSegmentVariant("source"),
                 new SimpleSegmentVariant("target"), null);
     }
 }

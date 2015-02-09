@@ -103,10 +103,6 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
         this.targetLang = targetLang;
     }
 
-    public Event getSegmentEvent(int segEventNumber) {
-        return this.events.get(segEventNumber);
-    }
-
     public List<Event> getSegmentEvents() {
         return this.events;
     }
@@ -114,7 +110,7 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
     @Override
     public List<OcelotSegment> parse(File xliffFile) throws IOException {
         events = new LinkedList<Event>();
-        List<OcelotSegment> segments = new LinkedList<OcelotSegment>();
+        List<OcelotSegment> segments = new ArrayList<OcelotSegment>();
         documentSegmentNum = 1;
 
         List<String> locales = FileUtil.guessLanguages(xliffFile.getAbsolutePath());
@@ -174,7 +170,7 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
         return segments;
     }
 
-    public OcelotSegment convertTextUnitToSegment(ITextUnit tu, int fileEventNum) {
+    public OkapiXLIFF12Segment convertTextUnitToSegment(ITextUnit tu, int fileEventNum) {
         TextContainer srcTu = tu.getSource();
         TextContainer tgtTu = new TextContainer();
 
@@ -194,10 +190,10 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
 
         TextContainer oriTgtTu = retrieveOriginalTarget(tgtTu);
 
-        OcelotSegment seg = new OcelotSegment(documentSegmentNum++, fileEventNum, fileEventNum,
+        OkapiXLIFF12Segment seg = new OkapiXLIFF12Segment(documentSegmentNum++,
                 new TextContainerVariant(srcTu), new TextContainerVariant(tgtTu),
-                oriTgtTu != null ? new TextContainerVariant(oriTgtTu) : null);
-        seg.setTransUnitId(tu.getId());
+                oriTgtTu != null ? new TextContainerVariant(oriTgtTu) : null,
+                tu);
         Property stateQualifier = tgtTu.getProperty("state-qualifier");
         if (stateQualifier != null) {
             StateQualifier sq = StateQualifier.get(stateQualifier.getValue());

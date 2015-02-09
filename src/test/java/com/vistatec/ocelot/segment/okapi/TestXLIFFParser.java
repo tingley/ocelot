@@ -33,19 +33,15 @@ import com.vistatec.ocelot.its.OtherITSMetadata;
 import com.vistatec.ocelot.its.Provenance;
 import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentVariant;
+import com.vistatec.ocelot.segment.XLIFFParser;
 
 import static com.vistatec.ocelot.rules.StateQualifier.*;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import net.sf.okapi.common.Event;
 import net.sf.okapi.common.LocaleId;
-import net.sf.okapi.common.annotation.AltTranslation;
-import net.sf.okapi.common.annotation.AltTranslationsAnnotation;
-import net.sf.okapi.common.annotation.XLIFFTool;
 import net.sf.okapi.common.resource.ITextUnit;
 import net.sf.okapi.common.resource.TextContainer;
 
@@ -62,8 +58,7 @@ public class TestXLIFFParser {
 
         LocaleId frFr = new LocaleId("fr-fr");
         for (OcelotSegment seg : parser.parse(new File(getClass().getResource("xliff_test.xlf").toURI()))) {
-            Event e = parser.getSegmentEvent(seg.getSourceEventNumber());
-            ITextUnit tu = e.getTextUnit();
+            ITextUnit tu = ((OkapiXLIFF12Segment)seg).getTextUnit();
             TextContainer tc = ((TextContainerVariant)seg.getTarget()).getTextContainer();
             assertEquals(tu.getTarget(frFr), tc);
         }
@@ -81,12 +76,12 @@ public class TestXLIFFParser {
         testReadExistingAltTrans(segments.get(4));
         testIgnoreUnrelatedAltTrans(segments.get(5));
         testReadCorrectAltTrans(segments.get(6));
-        testReadReviewPhaseName(segments.get(7));
-        testReadRebuttalPhaseName(segments.get(8));
-        testReadFinalReviewPhaseName(segments.get(9));
-        testReadTranslatorApprovalPhaseName(segments.get(10));
-        testReadUnhandledPhaseName(segments.get(11));
-        testReadMissingPhaseRef(segments.get(12));
+        testReadReviewPhaseName((OkapiXLIFF12Segment)segments.get(7));
+        testReadRebuttalPhaseName((OkapiXLIFF12Segment)segments.get(8));
+        testReadFinalReviewPhaseName((OkapiXLIFF12Segment)segments.get(9));
+        testReadTranslatorApprovalPhaseName((OkapiXLIFF12Segment)segments.get(10));
+        testReadUnhandledPhaseName((OkapiXLIFF12Segment)segments.get(11));
+        testReadMissingPhaseRef((OkapiXLIFF12Segment)segments.get(12));
         testReadMTConfidence(segments.get(13));
     }
 
@@ -167,34 +162,34 @@ public class TestXLIFFParser {
         assertEquals("Original target is incorrect", "Original example target 7", originalTarget.getDisplayText());
     }
 
-    public void testReadReviewPhaseName(OcelotSegment seg) {
+    public void testReadReviewPhaseName(OkapiXLIFF12Segment seg) {
         assertEquals("Phase name is incorrect", "review", seg.getPhaseName());
-        assertTrue(seg.isEditablePhase());
+        assertTrue(seg.isEditable());
     }
 
-    public void testReadRebuttalPhaseName(OcelotSegment seg) {
+    public void testReadRebuttalPhaseName(OkapiXLIFF12Segment seg) {
         assertEquals("Phase name is incorrect", "rebuttal", seg.getPhaseName());
-        assertFalse(seg.isEditablePhase());
+        assertFalse(seg.isEditable());
     }
 
-    public void testReadFinalReviewPhaseName(OcelotSegment seg) {
+    public void testReadFinalReviewPhaseName(OkapiXLIFF12Segment seg) {
         assertEquals("Phase name is incorrect", "final review", seg.getPhaseName());
-        assertTrue(seg.isEditablePhase());
+        assertTrue(seg.isEditable());
     }
 
-    public void testReadTranslatorApprovalPhaseName(OcelotSegment seg) {
+    public void testReadTranslatorApprovalPhaseName(OkapiXLIFF12Segment seg) {
         assertEquals("Phase name is incorrect", "translator approval", seg.getPhaseName());
-        assertFalse(seg.isEditablePhase());
+        assertFalse(seg.isEditable());
     }
 
-    public void testReadUnhandledPhaseName(OcelotSegment seg) {
+    public void testReadUnhandledPhaseName(OkapiXLIFF12Segment seg) {
         assertEquals("Phase name is incorrect", "unknown", seg.getPhaseName());
-        assertTrue(seg.isEditablePhase());
+        assertTrue(seg.isEditable());
     }
 
-    public void testReadMissingPhaseRef(OcelotSegment seg) {
+    public void testReadMissingPhaseRef(OkapiXLIFF12Segment seg) {
         assertNull(seg.getPhaseName());
-        assertTrue(seg.isEditablePhase());
+        assertTrue(seg.isEditable());
     }
 
     public void testReadMTConfidence(OcelotSegment seg) {
@@ -223,8 +218,8 @@ public class TestXLIFFParser {
         // OC-26. Workaround for an issue in the Okapi XLIFF reader
         // (Okapi Issue 412).  If the alt-trans contains an empty
         // target, don't crash. 
-        OkapiXLIFF12Parser parser = new OkapiXLIFF12Parser();
-        List<OcelotSegment> segments = parser.parse(new File(getClass().getResource("/oc26.xlf").toURI()));
+        XLIFFParser parser = new OkapiXLIFF12Parser();
+        List<? extends OcelotSegment> segments = parser.parse(new File(getClass().getResource("/oc26.xlf").toURI()));
         assertEquals(1, segments.size());
     }
 }

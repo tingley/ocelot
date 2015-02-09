@@ -42,10 +42,9 @@ import java.util.List;
 /**
  * Represents source, target segments with ITS metadata
  */
-public class OcelotSegment {
-    private int segmentNumber, srcEventNum, tgtEventNum;
+public abstract class OcelotSegment {
+    private int segmentNumber;
     private SegmentVariant source, target;
-    private String phase_name;
     private StateQualifier state_qualifier;
     private boolean addedProvenance = false, setOriginalTarget = false;
     private String lqiID, provID;
@@ -53,17 +52,12 @@ public class OcelotSegment {
     private List<Provenance> provList = new LinkedList<Provenance>();
     private List<OtherITSMetadata> otherITSList = new LinkedList<OtherITSMetadata>();
     private SegmentController segmentListener;
-    private String fileOriginal, transUnitId;
     private SegmentVariant originalTarget;
     private ArrayList<String> targetDiff = new ArrayList<String>();
 
-    public OcelotSegment() { }
-
-    public OcelotSegment(int segNum, int srcEventNum, int tgtEventNum,
-            SegmentVariant source, SegmentVariant target, SegmentVariant originalTarget) {
+    public OcelotSegment(int segNum, SegmentVariant source, SegmentVariant target,
+                         SegmentVariant originalTarget) {
         this.segmentNumber = segNum;
-        this.srcEventNum = srcEventNum;
-        this.tgtEventNum = tgtEventNum;
         this.source = source;
         this.target = target;
         if (originalTarget != null) {
@@ -82,14 +76,6 @@ public class OcelotSegment {
 
     public int getSegmentNumber() {
         return segmentNumber;
-    }
-
-    public int getSourceEventNumber() {
-        return srcEventNum;
-    }
-
-    public int getTargetEventNumber() {
-        return tgtEventNum;
     }
 
     public SegmentVariant getSource() {
@@ -155,27 +141,10 @@ public class OcelotSegment {
     /**
      * XLIFF specific fields.
      */
+    public abstract boolean isEditable();
 
-    public String getTransUnitId() {
-        return this.transUnitId;
-    }
-
-    public void setTransUnitId(String transUnitId) {
-        this.transUnitId = transUnitId;
-    }
-
-    public boolean isEditablePhase() {
-        return !"Rebuttal".equalsIgnoreCase(getPhaseName()) &&
-                !"Translator approval".equalsIgnoreCase(getPhaseName());
-    }
-
-    public String getPhaseName() {
-        return this.phase_name;
-    }
-
-    public void setPhaseName(String phaseName) {
-        this.phase_name = phaseName;
-    }
+    // Currently unused
+    public abstract String getTransUnitId();
 
     public StateQualifier getStateQualifier() {
         return this.state_qualifier;

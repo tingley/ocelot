@@ -91,7 +91,7 @@ public class TestSegmentController {
         SegmentController controller = emptyController();
         ITSDocStats stats = controller.getStats();
         List<ITSStats> expectedStats = Lists.newArrayList();
-        OcelotSegment seg = new OcelotSegment();
+        OcelotSegment seg = new SimpleSegment();
         seg.addProvenance(new UserProvenance("a", "b", "c"));
         controller.setSegments(Collections.singletonList(seg));
         expectedStats.add(new ProvenanceStats(ProvenanceStats.Type.revPerson, "a"));

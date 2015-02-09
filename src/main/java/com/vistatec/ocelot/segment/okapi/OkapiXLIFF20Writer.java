@@ -40,20 +40,23 @@ import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.vistatec.ocelot.config.ProvenanceConfig;
 import com.vistatec.ocelot.config.UserProvenance;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentController;
 import com.vistatec.ocelot.segment.XLIFFWriter;
+
 import java.util.List;
+
 import net.sf.okapi.lib.xliff2.core.Fragment;
 import net.sf.okapi.lib.xliff2.core.MTag;
 import net.sf.okapi.lib.xliff2.core.Part;
+import net.sf.okapi.lib.xliff2.core.Segment;
 import net.sf.okapi.lib.xliff2.core.Tag;
 import net.sf.okapi.lib.xliff2.core.TagType;
 import net.sf.okapi.lib.xliff2.its.IITSItem;
-
 import net.sf.okapi.lib.xliff2.its.ITSItems;
 import net.sf.okapi.lib.xliff2.its.ITSWriter;
 import net.sf.okapi.lib.xliff2.its.LocQualityIssue;
@@ -76,34 +79,29 @@ public class OkapiXLIFF20Writer implements XLIFFWriter {
 
     @Override
     public void updateSegment(OcelotSegment seg, SegmentController controller) {
-        net.sf.okapi.lib.xliff2.core.Segment unitPart = this.parser.getSegmentUnitPart(seg.getSourceEventNumber());
-        if (unitPart == null) {
-            LOG.error("Failed to find Okapi Unit Part associated with segment #"+seg.getSegmentNumber());
+        Preconditions.checkState(seg instanceof OkapiXLIFF20Segment,
+                "Unexpected non-XLIFF 2.0 segment %s", seg);
 
-        } else if (unitPart.isSegment()) {
-            //TODO: set ori target
-            if (seg.hasOriginalTarget()) {
-                FragmentVariant targetFrag = (FragmentVariant) seg.getTarget();
-                Fragment updatedOkapiFragment = targetFrag.getUpdatedOkapiFragment(unitPart.getTarget());
-                unitPart.setTarget(updatedOkapiFragment);
-            }
+        Segment unitPart = ((OkapiXLIFF20Segment)seg).getSegment();
 
-            updateITSLQIAnnotations(unitPart, seg);
-
-            if (!haveAddedOcelotProvAnnotation(unitPart, seg)) {
-                updateITSProvAnnotations(unitPart, seg);
-            }
-
-            FragmentVariant source = (FragmentVariant) seg.getSource();
-            source.updateSegmentAtoms(unitPart);
-
-            FragmentVariant target = (FragmentVariant) seg.getTarget();
-            target.updateSegmentAtoms(unitPart);
-
-        } else {
-            LOG.error("Unit part associated with Segment was not an Okapi Segment!");
-            LOG.error("Failed to update Unit Part for segment #"+seg.getSegmentNumber());
+        //TODO: set ori target
+        if (seg.hasOriginalTarget()) {
+            FragmentVariant targetFrag = (FragmentVariant) seg.getTarget();
+            Fragment updatedOkapiFragment = targetFrag.getUpdatedOkapiFragment(unitPart.getTarget());
+            unitPart.setTarget(updatedOkapiFragment);
         }
+
+        updateITSLQIAnnotations(unitPart, seg);
+
+        if (!haveAddedOcelotProvAnnotation(unitPart, seg)) {
+            updateITSProvAnnotations(unitPart, seg);
+        }
+
+        FragmentVariant source = (FragmentVariant) seg.getSource();
+        source.updateSegmentAtoms(unitPart);
+
+        FragmentVariant target = (FragmentVariant) seg.getTarget();
+        target.updateSegmentAtoms(unitPart);
     }
 
     /**

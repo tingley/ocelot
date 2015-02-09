@@ -10,6 +10,7 @@ import com.vistatec.ocelot.config.ProvenanceConfig;
 import com.vistatec.ocelot.config.UserProvenance;
 import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.SegmentController;
+import com.vistatec.ocelot.segment.SimpleSegment;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +18,7 @@ public class TestOkapiSegmentWriter {
 
     @Test
     public void testMissingProvenance() {
-        OcelotSegment seg = new OcelotSegment();
+        OcelotSegment seg = new SimpleSegment();
         seg.addProvenance(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_REVORG, "S",
                 GenericAnnotationType.PROV_REVPERSON, "T",
@@ -36,7 +37,7 @@ public class TestOkapiSegmentWriter {
 
     @Test
     public void testDontAddRedundantProvenance() throws Exception {
-        OcelotSegment seg = new OcelotSegment();
+        OcelotSegment seg = new SimpleSegment();
         seg.addProvenance(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_REVORG, "S",
                 GenericAnnotationType.PROV_REVPERSON, "T",
@@ -48,7 +49,7 @@ public class TestOkapiSegmentWriter {
 
     @Test
     public void testAddUserProvenance() throws Exception {
-        OcelotSegment seg = new OcelotSegment();
+        OcelotSegment seg = new SimpleSegment();
         seg.addProvenance(new OkapiProvenance(new GenericAnnotation(GenericAnnotationType.PROV,
                 GenericAnnotationType.PROV_REVORG, "S",
                 GenericAnnotationType.PROV_REVPERSON, "T",
