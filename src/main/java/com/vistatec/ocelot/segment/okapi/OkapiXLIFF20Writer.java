@@ -34,7 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import org.slf4j.Logger;
@@ -138,7 +137,7 @@ public class OkapiXLIFF20Writer implements XLIFFWriter {
     }
 
     @Override
-    public void save(File file) throws IOException, UnsupportedEncodingException {
+    public void save(File file) throws IOException {
         net.sf.okapi.lib.xliff2.writer.XLIFFWriter writer = new net.sf.okapi.lib.xliff2.writer.XLIFFWriter();
         StringWriter tmp = new StringWriter();
         writer.create(tmp, parser.getSourceLang());

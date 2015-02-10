@@ -46,7 +46,7 @@ public abstract class OcelotSegment {
     private int segmentNumber;
     private SegmentVariant source, target;
     private StateQualifier state_qualifier;
-    private boolean addedProvenance = false, setOriginalTarget = false;
+    private boolean setOriginalTarget = false;
     private String lqiID, provID;
     private List<LanguageQualityIssue> lqiList = new LinkedList<LanguageQualityIssue>();
     private List<Provenance> provList = new LinkedList<Provenance>();

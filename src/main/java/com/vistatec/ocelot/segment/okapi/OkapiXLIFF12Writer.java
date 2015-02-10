@@ -69,12 +69,12 @@ public class OkapiXLIFF12Writer implements XLIFFWriter {
     }
 
     @Override
-    public void save(File source) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+    public void save(File source) throws IOException {
         saveEvents(parser.getFilter(), parser.getSegmentEvents(),
                 source.getAbsolutePath(), LocaleId.fromString(parser.getTargetLang()));
     }
 
-    public void saveEvents(IFilter filter, List<Event> events, String output, LocaleId locId) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+    public void saveEvents(IFilter filter, List<Event> events, String output, LocaleId locId) throws IOException {
         StringBuilder tmp = new StringBuilder();
         ISkeletonWriter skelWriter = filter.createSkeletonWriter();
         EncoderManager encoderManager = filter.getEncoderManager();

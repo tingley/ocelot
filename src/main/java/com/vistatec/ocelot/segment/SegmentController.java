@@ -206,7 +206,7 @@ public class SegmentController implements SegmentModel {
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public void save(File file) throws UnsupportedEncodingException, FileNotFoundException, IOException {
+    public void save(File file) throws UnsupportedEncodingException, IOException {
         segmentWriter.save(file);
         this.dirty = false;
     }

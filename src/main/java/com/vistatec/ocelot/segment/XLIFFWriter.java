@@ -2,8 +2,7 @@ package com.vistatec.ocelot.segment;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public interface XLIFFWriter {
-    public void save(File file) throws IOException, UnsupportedEncodingException;
+    public void save(File file) throws IOException;
 }
