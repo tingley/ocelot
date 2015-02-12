@@ -9,11 +9,27 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 
-public abstract class BaseSegmentVariant implements SegmentVariant {
+public class BaseSegmentVariant implements SegmentVariant {
+    private List<SegmentAtom> atoms = new ArrayList<SegmentAtom>();
 
-    protected abstract List<SegmentAtom> getAtoms();
+    public BaseSegmentVariant() {
+    }
 
-    protected abstract void setAtoms(List<SegmentAtom> atoms);
+    public BaseSegmentVariant(List<SegmentAtom> atoms) {
+        this.atoms = atoms;
+    }
+
+    public List<SegmentAtom> getAtoms() {
+        return atoms;
+    }
+
+    protected void setAtoms(List<SegmentAtom> atoms) {
+        this.atoms = atoms;
+    }
+
+    public SegmentVariant createCopy() {
+        return new BaseSegmentVariant(new ArrayList<SegmentAtom>(atoms));
+    }
 
     List<SegmentAtom> getAtomsForRange(int start, int length) {
         List<SegmentAtom> atomsForRange = Lists.newArrayList();
@@ -54,6 +70,11 @@ public abstract class BaseSegmentVariant implements SegmentVariant {
             sb.append(atom.getData());
         }
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return getDisplayText();
     }
 
     @Override
@@ -255,4 +276,15 @@ public abstract class BaseSegmentVariant implements SegmentVariant {
         return codes;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (o == null || !(o instanceof BaseSegmentVariant)) return false;
+        return getAtoms().equals(((BaseSegmentVariant)o).getAtoms());
+    }
+
+    @Override
+    public int hashCode() {
+        return getAtoms().hashCode();
+    }
 }

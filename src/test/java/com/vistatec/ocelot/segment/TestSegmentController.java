@@ -24,7 +24,6 @@ import com.vistatec.ocelot.its.stats.ITSDocStats;
 import com.vistatec.ocelot.its.stats.ITSStats;
 import com.vistatec.ocelot.its.stats.LanguageQualityIssueStats;
 import com.vistatec.ocelot.its.stats.ProvenanceStats;
-import com.vistatec.ocelot.rules.RuleConfiguration;
 import com.vistatec.ocelot.rules.RulesTestHelpers;
 import com.vistatec.ocelot.segment.okapi.OkapiXLIFFFactory;
 
@@ -162,7 +161,7 @@ public class TestSegmentController {
         SegmentUpdateListener updateListener = new SegmentUpdateListener();
         eventBus.register(resetListener);
         eventBus.register(updateListener);
-        seg.updateTarget(new SimpleSegmentVariant("newtarget"));
+        seg.updateTarget(new BaseSegmentVariant(Lists.newArrayList((SegmentAtom)new TextAtom("newtarget"))));
         assertEquals(1, updateListener.callbackCount);
         seg.resetTarget();
         assertTrue(resetListener.called);

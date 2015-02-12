@@ -31,11 +31,11 @@ public class TestSegment {
     public void testMultipleSegmentUpdates() throws Exception {
         OcelotSegment seg = newSegment();
         SegmentVariant originalTarget = seg.getTarget();
-        SegmentVariant newTarget1 = new SimpleSegmentVariant("update1");
+        SegmentVariant newTarget1 = textVariant("update1");
         seg.updateTarget(newTarget1);
         assertEquals(newTarget1, seg.getTarget());
         assertEquals(originalTarget, seg.getOriginalTarget());
-        SegmentVariant newTarget2 = new SimpleSegmentVariant("update2");
+        SegmentVariant newTarget2 = textVariant("update2");
         seg.updateTarget(newTarget2);
         assertEquals(newTarget2, seg.getTarget());
         // Original target is still the -original- target.
@@ -45,7 +45,7 @@ public class TestSegment {
     @Test
     public void testResetTarget() {
         OcelotSegment seg = newSegment();
-        seg.updateTarget(new SimpleSegmentVariant("update"));
+        seg.updateTarget(textVariant("update"));
         assertTrue(seg.hasOriginalTarget());
         assertEquals("update", seg.getTarget().getDisplayText());
         assertNotNull(seg.getOriginalTarget());
@@ -70,9 +70,9 @@ public class TestSegment {
     @Test
     public void testTargetChangesAffectEditDistance() {
         OcelotSegment seg = newSegment();
-        seg.updateTarget(new SimpleSegmentVariant("targetA"));
+        seg.updateTarget(textVariant("targetA"));
         assertEquals(1, seg.getEditDistance());
-        seg.updateTarget(new SimpleSegmentVariant("targetAB"));
+        seg.updateTarget(textVariant("targetAB"));
         assertEquals(2, seg.getEditDistance());
         seg.resetTarget();
         assertEquals(0, seg.getEditDistance());
@@ -81,9 +81,13 @@ public class TestSegment {
     private static int nextSegmentId = 1;
     public static OcelotSegment newSegment() {
         int id = nextSegmentId++;
-        OcelotSegment seg = new SimpleSegment(id, new SimpleSegmentVariant("source"),
-                new SimpleSegmentVariant("target"), null);
+        OcelotSegment seg = new SimpleSegment(id, textVariant("source"),
+                textVariant("target"), null);
         seg.setSegmentController(segController);
         return seg;
+    }
+
+    private static BaseSegmentVariant textVariant(String text) {
+        return new BaseSegmentVariant(Lists.newArrayList((SegmentAtom)new TextAtom(text)));
     }
 }

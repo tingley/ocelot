@@ -41,8 +41,6 @@ import java.util.List;
 
 import net.sf.okapi.common.annotation.GenericAnnotation;
 import net.sf.okapi.common.annotation.GenericAnnotationType;
-import net.sf.okapi.common.resource.TextContainer;
-
 import org.junit.*;
 
 import com.vistatec.ocelot.its.LanguageQualityIssue;
@@ -52,9 +50,6 @@ import com.vistatec.ocelot.its.ProvenanceFactory;
 import com.vistatec.ocelot.rules.DataCategoryField.Matcher;
 import com.vistatec.ocelot.segment.SimpleSegment;
 import com.vistatec.ocelot.segment.OcelotSegment;
-import com.vistatec.ocelot.segment.SegmentVariant;
-import com.vistatec.ocelot.segment.okapi.TextContainerVariant;
-
 import static org.junit.Assert.*;
 
 public class TestRules {

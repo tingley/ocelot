@@ -41,9 +41,6 @@ import java.io.File;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import net.sf.okapi.common.LocaleId;
-import net.sf.okapi.common.resource.ITextUnit;
-import net.sf.okapi.common.resource.TextContainer;
 
 import org.junit.Test;
 
@@ -51,18 +48,6 @@ import org.junit.Test;
  * Test Okapi XLIFF parser conversion to Ocelot Segments.
  */
 public class TestXLIFFParser {
-
-    @Test
-    public void testTargetLocales() throws Exception {
-        OkapiXLIFF12Parser parser = new OkapiXLIFF12Parser();
-
-        LocaleId frFr = new LocaleId("fr-fr");
-        for (OcelotSegment seg : parser.parse(new File(getClass().getResource("xliff_test.xlf").toURI()))) {
-            ITextUnit tu = ((OkapiXLIFF12Segment)seg).getTextUnit();
-            TextContainer tc = ((TextContainerVariant)seg.getTarget()).getTextContainer();
-            assertEquals(tu.getTarget(frFr), tc);
-        }
-    }
     
     @Test
     public void testXLIFFToSegment() throws Exception {

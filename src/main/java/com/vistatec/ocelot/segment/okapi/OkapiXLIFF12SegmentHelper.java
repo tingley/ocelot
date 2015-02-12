@@ -24,7 +24,6 @@ import net.sf.okapi.common.resource.ITextUnit;
 import net.sf.okapi.common.resource.Property;
 import net.sf.okapi.common.resource.TextContainer;
 
-import com.vistatec.ocelot.ObjectUtils;
 import com.vistatec.ocelot.its.LanguageQualityIssue;
 import com.vistatec.ocelot.its.OtherITSMetadata;
 import com.vistatec.ocelot.its.Provenance;
@@ -32,7 +31,6 @@ import com.vistatec.ocelot.its.ProvenanceFactory;
 import com.vistatec.ocelot.rules.DataCategoryField;
 import com.vistatec.ocelot.rules.StateQualifier;
 import com.vistatec.ocelot.segment.OcelotSegment;
-import com.vistatec.ocelot.segment.SegmentController;
 
 public class OkapiXLIFF12SegmentHelper {
     private static Logger LOG = LoggerFactory.getLogger(OkapiXLIFF12SegmentHelper.class);
@@ -51,24 +49,22 @@ public class OkapiXLIFF12SegmentHelper {
         return tgtLocale;
     }
 
-    public OkapiXLIFF12Segment convertTextUnitToSegment(ITextUnit tu, int documentSegmentNum) {
-        TextContainer srcTu = tu.getSource();
-        TextContainer tgtTu = new TextContainer();
-
-        // Create a target if none exists.
-        if (tu.getTargetLocales().size() >= 1) {
-            tgtTu = tu.getTarget(tgtLocale);
-        } 
-        else {
+    public static TextContainer getTargetTextContainer(ITextUnit tu, LocaleId tgtLocale) {
+        TextContainer tgtTu = tu.getTarget(tgtLocale);
+        if (tgtTu == null) {
+            tgtTu = new TextContainer();
             tu.setTarget(tgtLocale, tgtTu);
         }
+        return tgtTu;
+    }
 
-        TextContainer oriTgtTu = retrieveOriginalTarget(tgtTu);
+    // XXX Maybe move this back to the parser
+    public OkapiXLIFF12Segment convertTextUnitToSegment(ITextUnit tu, int documentSegmentNum,
+                                                        LocaleId srcLocale) {
+        TextContainer tgtTu = getTargetTextContainer(tu, tgtLocale);
 
-        OkapiXLIFF12Segment seg = new OkapiXLIFF12Segment(documentSegmentNum,
-                new TextContainerVariant(srcTu), new TextContainerVariant(tgtTu),
-                oriTgtTu != null ? new TextContainerVariant(oriTgtTu) : null,
-                tu, tgtLocale);
+        OkapiXLIFF12Segment seg = new OkapiXLIFF12Segment(documentSegmentNum, tu,
+                                        srcLocale, tgtLocale);
         Property stateQualifier = tgtTu.getProperty("state-qualifier");
         if (stateQualifier != null) {
             StateQualifier sq = StateQualifier.get(stateQualifier.getValue());
@@ -85,7 +81,7 @@ public class OkapiXLIFF12SegmentHelper {
             XLIFFPhase refPhase = phaseAnn.getReferencedPhase();
             seg.setPhaseName(refPhase.getPhaseName());
         }
-        attachITSDataToSegment(seg, tu, srcTu, tgtTu);
+        attachITSDataToSegment(seg, tu, tu.getSource(), tgtTu);
         return seg;
     }
 

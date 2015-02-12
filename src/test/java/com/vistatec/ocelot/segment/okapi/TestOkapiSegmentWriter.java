@@ -4,7 +4,6 @@ import net.sf.okapi.common.LocaleId;
 import net.sf.okapi.common.annotation.GenericAnnotation;
 import net.sf.okapi.common.annotation.GenericAnnotationType;
 import net.sf.okapi.common.annotation.ITSProvenanceAnnotations;
-import net.sf.okapi.common.resource.TextContainer;
 import net.sf.okapi.common.resource.TextUnit;
 
 import org.junit.*;
@@ -18,9 +17,7 @@ import static org.junit.Assert.*;
 public class TestOkapiSegmentWriter {
 
     private OkapiXLIFF12Segment emptySegment() {
-        return new OkapiXLIFF12Segment(1, new TextContainerVariant(new TextContainer()),
-                new TextContainerVariant(new TextContainer()),
-                new TextContainerVariant(new TextContainer()), new TextUnit(), LocaleId.FRENCH);
+        return new OkapiXLIFF12Segment(1, new TextUnit(), LocaleId.ENGLISH, LocaleId.FRENCH);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.vistatec.ocelot.rules;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

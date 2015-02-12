@@ -143,7 +143,8 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
 
             } else if (event.isTextUnit()) {
                 ITextUnit tu = (ITextUnit) event.getResource();
-                segments.add(helper.convertTextUnitToSegment(tu, documentSegmentNum++));
+                segments.add(helper.convertTextUnitToSegment(tu, documentSegmentNum++,
+                                                             sourceLocale));
             }
         }
         is.close();

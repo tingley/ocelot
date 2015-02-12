@@ -121,9 +121,6 @@ public class OkapiXLIFF20Parser implements XLIFFParser {
     private OcelotSegment convertPartToSegment(Segment unitPart, int segmentUnitPartIndex) throws MalformedURLException {
         segmentEventMapping.put(this.documentSegmentNum, this.events.size()-1);
         OcelotSegment seg = new OkapiXLIFF20Segment(this.documentSegmentNum++,
-                new FragmentVariant(unitPart, false),
-                new FragmentVariant(unitPart, true),
-                null,
                 unitPart); //TODO: load original target from file
         seg.setLQI(parseLqiData(unitPart));
         seg.setProv(parseProvData(unitPart));

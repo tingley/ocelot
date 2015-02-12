@@ -39,22 +39,8 @@ import java.io.Writer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vistatec.ocelot.its.LanguageQualityIssue;
-import com.vistatec.ocelot.segment.OcelotSegment;
 import com.vistatec.ocelot.segment.XLIFFWriter;
 
-import java.util.List;
-
-import net.sf.okapi.lib.xliff2.core.Fragment;
-import net.sf.okapi.lib.xliff2.core.MTag;
-import net.sf.okapi.lib.xliff2.core.Part;
-import net.sf.okapi.lib.xliff2.core.Tag;
-import net.sf.okapi.lib.xliff2.core.TagType;
-import net.sf.okapi.lib.xliff2.its.IITSItem;
-import net.sf.okapi.lib.xliff2.its.ITSItems;
-import net.sf.okapi.lib.xliff2.its.ITSWriter;
-import net.sf.okapi.lib.xliff2.its.LocQualityIssue;
-import net.sf.okapi.lib.xliff2.its.LocQualityIssues;
 import net.sf.okapi.lib.xliff2.reader.Event;
 
 /**
@@ -66,74 +52,6 @@ public class OkapiXLIFF20Writer implements XLIFFWriter {
 
     public OkapiXLIFF20Writer(OkapiXLIFF20Parser parser) {
         this.parser = parser;
-    }
-
-    /**
-     * Update LQI annotations on the segment. TODO: separate from non-LQI updates
-     * @param unitPart - Okapi representation of the segment
-     * @param seg - Ocelot segment
-     */
-    public void updateITSLQIAnnotations(Part unitPart, OcelotSegment seg) {
-        removeExistingLqiAnnotationsFromSegment(unitPart);
-
-        if (seg.containsLQI()) {
-            String ocelotLqiId = "OcelotLQI" + seg.getSegmentNumber();
-            LocQualityIssues newOkapiLqiGroup = convertOcelotToOkapiLqi(
-                    seg.getLQI(), ocelotLqiId);
-            ITSWriter.annotate(unitPart.getTarget(), 0, -1, newOkapiLqiGroup);
-        }
-    }
-
-    private void removeExistingLqiAnnotationsFromSegment(Part unitPart) {
-        List<Tag> sourceTags = unitPart.getSource().getOwnTags();
-        List<Tag> targetTags = unitPart.getTarget().getOwnTags();
-
-        removeExistingLqiAnnotations(unitPart, false, sourceTags);
-        removeExistingLqiAnnotations(unitPart, true, targetTags);
-    }
-
-    private void removeExistingLqiAnnotations(Part unitPart, boolean isTarget, List<Tag> tags) {
-        for (Tag tag : tags) {
-            if (tag.isMarker()) {
-                MTag mtag = (MTag) tag;
-                if (mtag.hasITSItem()) {
-                    ITSItems items = mtag.getITSItems();
-                    IITSItem itsLqiItem = items.get(LocQualityIssue.class);
-                    if (itsLqiItem != null) {
-                        // Don't delete the LQI issues for opening tags so we
-                        // can find the corresponding closing tag and delete it as well
-                        if (mtag.getTagType() == TagType.CLOSING ||
-                                mtag.getTagType() == TagType.STANDALONE) {
-                            items.remove(itsLqiItem);
-                        }
-                        // TODO: Assumes MTag is only used for ITS metadata
-                        if (items.size() <= 1) {
-                            Fragment frag = isTarget ?
-                                    unitPart.getTarget() : unitPart.getSource();
-                            frag.remove(mtag);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private LocQualityIssues convertOcelotToOkapiLqi(List<LanguageQualityIssue> ocelotLqi, String ocelotLqiId) {
-        LocQualityIssues newLqiGroup = new LocQualityIssues(ocelotLqiId);
-        for (LanguageQualityIssue lqi : ocelotLqi) {
-            LocQualityIssue newLqi = new LocQualityIssue();
-            newLqi.setType(lqi.getType());
-            newLqi.setComment(lqi.getComment());
-            newLqi.setSeverity(lqi.getSeverity());
-
-            if (lqi.getProfileReference() != null) {
-                newLqi.setProfileRef(lqi.getProfileReference().toString());
-            }
-
-            newLqi.setEnabled(lqi.isEnabled());
-            newLqiGroup.getList().add(newLqi);
-        }
-        return newLqiGroup;
     }
 
     @Override

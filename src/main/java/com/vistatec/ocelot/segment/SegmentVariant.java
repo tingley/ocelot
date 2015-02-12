@@ -7,24 +7,11 @@ import java.util.List;
  * or target).
  */
 public interface SegmentVariant {
-
-    /**
-     * Create a new (empty) variant of this type.
-     * @return
-     */
-    SegmentVariant createEmptyTarget();
-
     /**
      * Create a new variant containing the same content as
      * this variant.
      */
     SegmentVariant createCopy();
-
-    /**
-     * Set the content of this variant to a copy of the 
-     * content in another variant.
-     */
-    void setContent(SegmentVariant variant);
 
     /**
      * Get the text representation of this variant for display
