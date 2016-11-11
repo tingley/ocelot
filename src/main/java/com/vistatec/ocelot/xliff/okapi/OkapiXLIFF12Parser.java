@@ -48,6 +48,8 @@ import net.sf.okapi.common.annotation.GenericAnnotationType;
 import net.sf.okapi.common.annotation.GenericAnnotations;
 import net.sf.okapi.common.annotation.ITSLQIAnnotations;
 import net.sf.okapi.common.annotation.ITSProvenanceAnnotations;
+import net.sf.okapi.common.annotation.XLIFFNote;
+import net.sf.okapi.common.annotation.XLIFFNoteAnnotation;
 import net.sf.okapi.common.annotation.XLIFFPhase;
 import net.sf.okapi.common.annotation.XLIFFPhaseAnnotation;
 import net.sf.okapi.common.annotation.XLIFFTool;
@@ -269,12 +271,14 @@ public class OkapiXLIFF12Parser implements XLIFFParser {
 	}
 
 	private void readNotes(OkapiSegment seg, ITextUnit tu) {
-	    Property p = tu.getProperty(Property.NOTE);
-	    if (p != null) {
-	        // XLIFF 1.2 doesn't support note IDs, so we always display notes
-	        Notes notes = new Notes();
-	        notes.add(new Note(Note.OCELOT_ID_PREFIX + "1", p.getValue()));
-	        seg.setNotes(notes);
+	    XLIFFNoteAnnotation xliffNotes = tu.getAnnotation(XLIFFNoteAnnotation.class);
+	    if (xliffNotes != null) {
+            Notes notes = new Notes();
+	        for (XLIFFNote n : xliffNotes) {
+	            // XLIFF 1.2 doesn't support note IDs, so we always display notes
+	            notes.add(new Note(Note.OCELOT_ID_PREFIX + "1", n.getNoteText()));
+	        }
+            seg.setNotes(notes);
 	    }
 	}
 

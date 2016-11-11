@@ -48,6 +48,7 @@ import net.sf.okapi.common.resource.TextContainer;
 
 import org.junit.Test;
 
+import com.vistatec.ocelot.segment.model.okapi.Notes;
 import com.vistatec.ocelot.segment.model.okapi.OkapiSegment;
 import com.vistatec.ocelot.segment.model.okapi.TextContainerVariant;
 
@@ -236,5 +237,16 @@ public class TestXLIFFParser {
         OkapiXLIFF12Parser parser = new OkapiXLIFF12Parser();
         List<OcelotSegment> segments = parser.parse(new File(getClass().getResource("/oc26.xlf").toURI()));
         assertEquals(1, segments.size());
+    }
+
+    @Test
+    public void testXLIFFTUNotes() throws Exception {
+        OkapiXLIFF12Parser parser = new OkapiXLIFF12Parser();
+        List<OcelotSegment> segments = parser.parse(new File(getClass().getResource("xliff12_notes.xlf").toURI()));
+        assertEquals(1, segments.size());
+        Notes notes = segments.get(0).getNotes();
+        assertNotNull(notes);
+        assertEquals(1, notes.size());
+        assertEquals("This is a note.", notes.get(0).getContent());
     }
 }
