@@ -196,9 +196,8 @@ public class OcelotApp implements OcelotEventQueueListener {
         return pluginManager.getPluginMenuList(mainframe);
     }
 
-public List<JMenuItem> getSegmentContexPluginMenues(OcelotSegment segment,
+    public List<JMenuItem> getSegmentContextPluginMenus(OcelotSegment segment,
 			BaseSegmentVariant variant, boolean target) {
-
 		return pluginManager.getSegmentContextMenuItems(segment, variant,
 				target);
 	}
