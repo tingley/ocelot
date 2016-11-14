@@ -1,5 +1,8 @@
 package com.vistatec.ocelot.services;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.vistatec.ocelot.events.ItsDocStatsAddedProvEvent;
@@ -20,13 +23,13 @@ import com.vistatec.ocelot.its.stats.model.LanguageQualityIssueStats;
 import com.vistatec.ocelot.segment.model.OcelotSegment;
 
 public class ITSDocStatsService implements OcelotEventQueueListener {
-    private final ITSDocStats itsDocStats;
+    private final ITSDocStats itsDocStats = new ITSDocStats();
     private final OcelotEventQueue eventQueue;
 
     @Inject
-    public ITSDocStatsService(ITSDocStats itsDocStats, OcelotEventQueue eventQueue) {
-        this.itsDocStats = itsDocStats;
+    public ITSDocStatsService(OcelotEventQueue eventQueue) {
         this.eventQueue = eventQueue;
+        eventQueue.registerListener(this);
     }
 
     public int getNumStats() {
@@ -35,6 +38,10 @@ public class ITSDocStatsService implements OcelotEventQueueListener {
 
     public ITSStats getItsStatistic(int row) {
         return this.itsDocStats.getStats().get(row);
+    }
+
+    public List<ITSStats> getStats() {
+        return Collections.unmodifiableList(itsDocStats.getStats());
     }
 
     @Subscribe

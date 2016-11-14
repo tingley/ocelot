@@ -33,6 +33,9 @@ public class TestSegmentService {
 
     @Before
     public void before() {
+        mockery.checking(new Expectations() {{
+            oneOf(mockEventQueue).registerListener(with(any(SegmentServiceImpl.class)));
+        }});
         this.segmentService = new SegmentServiceImpl(mockEventQueue);
     }
 

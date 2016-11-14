@@ -20,6 +20,7 @@ public class ProvenanceService implements OcelotEventQueueListener {
     public ProvenanceService(OcelotEventQueue eventQueue, ConfigService cfgService) {
         this.eventQueue = eventQueue;
         this.cfgService = cfgService;
+        eventQueue.registerListener(this);
     }
 
     @Subscribe

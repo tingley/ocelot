@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.ByteSource;
 import com.google.common.io.Files;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.vistatec.ocelot.config.ConfigService;
 import com.vistatec.ocelot.config.ConfigTransferService;
 import com.vistatec.ocelot.config.ConfigTransferService.TransferException;
@@ -37,7 +39,8 @@ public class OkapiTmManager implements TmManager {
 	private final ConfigService cfgService;
 	private final TmTmxWriter tmxWriter;
 
-	public OkapiTmManager(File tmDir, ConfigService cfgService,
+	@Inject
+	public OkapiTmManager(@Named("tmDir") File tmDir, ConfigService cfgService,
 	        TmTmxWriter tmxWriter) throws IOException,
 	        ConfigTransferService.TransferException {
 		this.tmRootDir = tmDir;

@@ -15,6 +15,7 @@ import com.vistatec.ocelot.its.model.okapi.OkapiProvenance;
 import static org.junit.Assert.*;
 
 import com.google.common.eventbus.EventBus;
+import com.vistatec.ocelot.events.ItsDocStatsClearEvent;
 import com.vistatec.ocelot.events.ItsDocStatsUpdateLqiEvent;
 import com.vistatec.ocelot.events.api.EventBusWrapper;
 import com.vistatec.ocelot.events.api.OcelotEventQueue;
@@ -24,24 +25,22 @@ public class TestITSDocStats {
 
     @Test
     public void testAddLQI() {
-        ITSDocStats docStats = new ITSDocStats();
         OcelotEventQueue eventQueue = new EventBusWrapper(new EventBus());
-        ITSDocStatsService itsDocStatsService = new ITSDocStatsService(
-                docStats, eventQueue);
+        ITSDocStatsService itsDocStatsService = new ITSDocStatsService(eventQueue);
         itsDocStatsService.updateLQIStats(new ItsDocStatsUpdateLqiEvent(getLQI("omission", 50)));
 
-        assertEquals(Collections.singletonList(getLQIStats(1, "omission", 50)), docStats.getStats());
-        assertEquals((Integer)1, docStats.getStats().get(0).getCount());
+        assertEquals(Collections.singletonList(getLQIStats(1, "omission", 50)), itsDocStatsService.getStats());
+        assertEquals((Integer)1, itsDocStatsService.getStats().get(0).getCount());
 
         itsDocStatsService.updateLQIStats(new ItsDocStatsUpdateLqiEvent(getLQI("omission", 70)));
-        assertEquals(Collections.singletonList(getLQIStats(2, "omission", 50, 70)), docStats.getStats());
-        assertEquals((Integer)2, docStats.getStats().get(0).getCount());
+        assertEquals(Collections.singletonList(getLQIStats(2, "omission", 50, 70)), itsDocStatsService.getStats());
+        assertEquals((Integer)2, itsDocStatsService.getStats().get(0).getCount());
 
         itsDocStatsService.updateLQIStats(new ItsDocStatsUpdateLqiEvent(getLQI("omission", 30)));
-        assertEquals(Collections.singletonList(getLQIStats(3, "omission", 30, 70)), docStats.getStats());
+        assertEquals(Collections.singletonList(getLQIStats(3, "omission", 30, 70)), itsDocStatsService.getStats());
 
         itsDocStatsService.updateLQIStats(new ItsDocStatsUpdateLqiEvent(getLQI("mistranslation", 80)));
-        assertEquals(Arrays.asList(getLQIStats(3, "omission", 30, 70), getLQIStats(1, "mistranslation", 80)), docStats.getStats());
+        assertEquals(Arrays.asList(getLQIStats(3, "omission", 30, 70), getLQIStats(1, "mistranslation", 80)), itsDocStatsService.getStats());
     }
 
     @Test
@@ -76,14 +75,12 @@ public class TestITSDocStats {
 
     @Test
     public void testClearStats() {
-        ITSDocStats docStats = new ITSDocStats();
         OcelotEventQueue eventQueue = new EventBusWrapper(new EventBus());
-        ITSDocStatsService itsDocStatsService = new ITSDocStatsService(
-                docStats, eventQueue);
+        ITSDocStatsService itsDocStatsService = new ITSDocStatsService(eventQueue);
         itsDocStatsService.updateLQIStats(new ItsDocStatsUpdateLqiEvent(getLQI("omission", 50)));
-        assertEquals(Collections.singletonList(getLQIStats(1, "omission", 50)), docStats.getStats());
-        docStats.clear();
-        assertEquals(Collections.emptyList(), docStats.getStats());
+        assertEquals(Collections.singletonList(getLQIStats(1, "omission", 50)), itsDocStatsService.getStats());
+        itsDocStatsService.clear(new ItsDocStatsClearEvent());
+        assertEquals(Collections.emptyList(), itsDocStatsService.getStats());
     }
 
     private LanguageQualityIssue getLQI(String type, int severity) {

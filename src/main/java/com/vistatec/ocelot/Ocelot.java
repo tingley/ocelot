@@ -151,19 +151,18 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 	        InstantiationException, IllegalAccessException {
 		super(new BorderLayout());
 		this.ocelotScope = ocelotScope;
-		this.pluginManager = ocelotScope.getInstance(PluginManager.class);
 		this.eventQueue = ocelotScope.getInstance(OcelotEventQueue.class);
 		eventQueue.registerListener(this);
 		this.ocelotApp = ocelotScope.getInstance(OcelotApp.class);
 		this.tmGuiManager = ocelotScope.getInstance(TmGuiManager.class);
 		this.eventQueue.registerListener(tmGuiManager);
-		this.lqiGridController = ocelotScope
-		        .getInstance(LQIGridController.class);
+		this.lqiGridController = ocelotScope.getInstance(LQIGridController.class);
 		eventQueue.registerListener(ocelotApp);
 		this.frController = ocelotScope.getInstance(FindAndReplaceController.class);
 		platformSupport = ocelotScope.getInstance(PlatformSupport.class);
 		platformSupport.init(this);
-
+        this.pluginManager = ocelotScope.getInstance(PluginManager.class);
+        pluginManager.discover();
 		useNativeUI = Boolean.valueOf(System.getProperty("ocelot.nativeUI",
 		        "false"));
 		optionPaneBackgroundColor = (Color) UIManager

@@ -22,6 +22,8 @@ import org.xml.sax.SAXException;
 
 import com.google.common.io.Files;
 import com.vistatec.ocelot.events.OpenFileEvent;
+import com.vistatec.ocelot.events.api.OcelotEventQueue;
+import com.vistatec.ocelot.events.api.OcelotEventQueueListener;
 import com.vistatec.ocelot.segment.model.OcelotSegment;
 import com.vistatec.ocelot.segment.model.SimpleSegment;
 import com.vistatec.ocelot.services.SegmentService;
@@ -32,6 +34,7 @@ import net.sf.okapi.common.LocaleId;
 public class TestOkapiTmxWriter {
     private final Mockery mockery = new Mockery();
     private final SegmentService segService = mockery.mock(SegmentService.class);
+    private final OcelotEventQueue eventQueue = mockery.mock(OcelotEventQueue.class);
     private OkapiTmxWriter tmxWriter;
     private File testFile;
 
@@ -57,9 +60,10 @@ public class TestOkapiTmxWriter {
                     will(returnValue(1));
                 allowing(segService).getSegment(0);
                     will(returnValue(testSeg));
+                oneOf(eventQueue).registerListener(with(any(OcelotEventQueueListener.class)));
             }
         });
-        tmxWriter = new OkapiTmxWriter(segService);
+        tmxWriter = new OkapiTmxWriter(segService, eventQueue);
     }
 
     private XLIFFDocument getMockXLIFFDoc() {
@@ -128,9 +132,10 @@ public class TestOkapiTmxWriter {
                     will(returnValue(seg1));
                 allowing(segService).getSegment(1);
                     will(returnValue(seg2));
+                oneOf(eventQueue).registerListener(with(any(OcelotEventQueueListener.class)));
             }
         });
-        tmxWriter = new OkapiTmxWriter(segService);
+        tmxWriter = new OkapiTmxWriter(segService, eventQueue);
 
         tmxWriter.setOpenFileLangs(new OpenFileEvent("export_multiple_segments_tmx_test", getMockXLIFFDoc()));
         tmxWriter.exportTmx(testFile);

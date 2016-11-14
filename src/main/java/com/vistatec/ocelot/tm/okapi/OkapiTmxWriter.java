@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.IOException;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import com.vistatec.ocelot.Version;
 import com.vistatec.ocelot.events.OpenFileEvent;
+import com.vistatec.ocelot.events.api.OcelotEventQueue;
 import com.vistatec.ocelot.events.api.OcelotEventQueueListener;
 import com.vistatec.ocelot.segment.model.CodeAtom;
 import com.vistatec.ocelot.segment.model.OcelotSegment;
@@ -36,9 +38,11 @@ public class OkapiTmxWriter implements TmTmxWriter, OcelotEventQueueListener {
     private XMLEncoder attributeEncoder = new XMLEncoder("UTF-8", "\n",
                     true, true, false, QuoteMode.ALL); 
 
-    public OkapiTmxWriter(SegmentService segService) {
+    @Inject
+    public OkapiTmxWriter(SegmentService segService, OcelotEventQueue eventQueue) {
         this.segService = segService;
         attributeEncoder.getParameters();
+        eventQueue.registerListener(this);
     }
 
     @Subscribe

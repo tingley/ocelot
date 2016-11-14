@@ -65,6 +65,7 @@ public class SegmentServiceImpl implements SegmentService {
     @Inject
     public SegmentServiceImpl(OcelotEventQueue eventQueue) {
         this.eventQueue = eventQueue;
+        eventQueue.registerListener(this);
     }
 
     @Override

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import com.vistatec.ocelot.PlatformSupport;
 import com.vistatec.ocelot.config.ConfigTransferService.TransferException;
 import com.vistatec.ocelot.config.LqiConfigService;
@@ -58,6 +59,7 @@ public class LQIGridController implements OcelotEventQueueListener {
 	 * @param eventQueue
 	 *            the event queue.
 	 */
+	@Inject
 	public LQIGridController(final LqiConfigService configService,
 	        final OcelotEventQueue eventQueue, PlatformSupport platformSupport) {
 
@@ -79,6 +81,7 @@ public class LQIGridController implements OcelotEventQueueListener {
 
 		this.configService = configService;
 		this.eventQueue = eventQueue;
+		eventQueue.registerListener(this);
 		this.ocelotMainFrame = ocelotMainFrame;
 		this.platformSupport = platformSupport;
 	}
@@ -226,7 +229,7 @@ public class LQIGridController implements OcelotEventQueueListener {
 	 * Closes the LQI grid.
 	 */
 	public void close() {
-		
+	    eventQueue.unregisterListener(this);
 		gridDialog.dispose();
 		gridDialog = null;
     }

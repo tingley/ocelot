@@ -43,6 +43,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import com.vistatec.ocelot.config.ConfigService;
 import com.vistatec.ocelot.events.SegmentEditEvent;
 import com.vistatec.ocelot.events.SegmentNoteEditEvent;
@@ -60,9 +61,11 @@ public class OkapiXliffService implements XliffService {
     private final ConfigService cfgService;
     private final OcelotEventQueue eventQueue;
 
+    @Inject
     public OkapiXliffService(ConfigService cfgService, OcelotEventQueue eventQueue) {
         this.cfgService = cfgService;
         this.eventQueue = eventQueue;
+        eventQueue.registerListener(this);
     }
 
     @Subscribe

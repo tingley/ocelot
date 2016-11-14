@@ -8,6 +8,7 @@ import java.util.Locale;
 import javax.swing.JOptionPane;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import com.vistatec.ocelot.events.HighlightEvent;
 import com.vistatec.ocelot.events.OpenFileEvent;
 import com.vistatec.ocelot.events.ReplaceDoneEvent;
@@ -61,11 +62,13 @@ public class FindAndReplaceController implements OcelotEventQueueListener {
 	 * @param eventQueue
 	 *            the event queue
 	 */
+	@Inject
 	public FindAndReplaceController(OcelotEventQueue eventQueue) {
 
 		this.eventQueue = eventQueue;
 		wordFinder = new WordFinder();
 		replacedResIdxList = new ArrayList<Integer>();
+		eventQueue.registerListener(this);
 	}
 
 	/**

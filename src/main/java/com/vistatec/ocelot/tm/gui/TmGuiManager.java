@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.Window;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 import com.vistatec.ocelot.config.ConfigService;
 import com.vistatec.ocelot.events.ConcordanceSearchEvent;
 import com.vistatec.ocelot.events.ConfigTmRequestEvent;
@@ -45,11 +46,13 @@ public class TmGuiManager implements OcelotEventQueueListener {
 	 * @param cfgService
 	 *            the configuration service            
 	 */
+	@Inject
 	public TmGuiManager(final TmManager tmManager, final TmService tmService,
 			final OcelotEventQueue eventQueue, final ConfigService cfgService) {
 
 		configController = new TmGuiConfigController(tmManager, cfgService);
 		matchController = new TmGuiMatchController(tmService, eventQueue);
+		eventQueue.registerListener(this);
 	}
 
 	/**

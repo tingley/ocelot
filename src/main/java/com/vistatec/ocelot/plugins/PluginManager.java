@@ -60,6 +60,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.vistatec.ocelot.config.ConfigService;
 import com.vistatec.ocelot.config.ConfigTransferService;
 import com.vistatec.ocelot.events.EnrichingStartedStoppedEvent;
@@ -105,7 +107,8 @@ public class PluginManager implements OcelotEventQueueListener {
 	private final ConfigService cfgService;
 	private QualityPluginManager qualityPluginManager;
 
-	public PluginManager(ConfigService cfgService, File pluginDir,
+	@Inject
+	public PluginManager(ConfigService cfgService, @Named("pluginDir") File pluginDir,
 			OcelotEventQueue eventQueue) {
 		this.itsPlugins = new HashMap<ITSPlugin, Boolean>();
 		this.segPlugins = new HashMap<SegmentPlugin, Boolean>();
@@ -115,6 +118,7 @@ public class PluginManager implements OcelotEventQueueListener {
 		this.cfgService = cfgService;
 		this.pluginDir = pluginDir;
 		qualityPluginManager = new QualityPluginManager();
+        eventQueue.registerListener(this);
 	}
 
 	public File getPluginDir() {
