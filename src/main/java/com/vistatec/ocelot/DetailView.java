@@ -66,6 +66,7 @@ public class DetailView extends JPanel implements OcelotEventQueueListener {
     @Inject
     public DetailView(OcelotEventQueue eventQueue, LqiConfigService lqiService) {
         this.eventQueue = eventQueue;
+        eventQueue.registerListener(this);
         this.lqiService = lqiService;
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(500, 250));

@@ -72,6 +72,7 @@ public class ProvenanceProfileView extends ODialogPanel implements ActionListene
         super(new GridBagLayout());
         setBorder(new EmptyBorder(10,10,10,10));
         this.eventQueue = eventQueue;
+        eventQueue.registerListener(this);
         UserProvenance profile = cfgService.getUserProvenance();
 
         GridBagConstraints gridBag = new GridBagConstraints();

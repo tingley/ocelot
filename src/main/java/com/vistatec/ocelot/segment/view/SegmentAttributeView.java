@@ -66,6 +66,8 @@ public class SegmentAttributeView extends JTabbedPane implements OcelotEventQueu
 
     @Inject
     public SegmentAttributeView(OcelotEventQueue eventQueue, ITSDocStatsTableView docStatsView, LqiConfigService  lqiService) {
+        eventQueue.registerListener(this);
+
         aggregateTableView = docStatsView;
         addTab("Doc Stats", aggregateTableView);
         eventQueue.registerListener(aggregateTableView);
@@ -89,8 +91,6 @@ public class SegmentAttributeView extends JTabbedPane implements OcelotEventQueu
         itsTableView = new OtherITSTableView();
         eventQueue.registerListener(itsTableView);
         addTab("Other ITS", itsTableView);
-        eventQueue.registerListener(itsTableView);
-        
 
         // Deselect metadata to allow reselection for detail view after switching tabs.
         addChangeListener(new ChangeListener() {

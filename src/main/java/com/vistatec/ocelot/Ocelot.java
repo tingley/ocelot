@@ -82,6 +82,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.vistatec.ocelot.di.OcelotModule;
 import com.vistatec.ocelot.events.ConfigTmRequestEvent;
@@ -147,38 +148,33 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 
 	private PlatformSupport platformSupport;
 
-	public Ocelot(Injector ocelotScope) throws IOException,
-	        InstantiationException, IllegalAccessException {
+	// TODO: remove Injector dependency
+	@Inject
+	public Ocelot(Injector ocelotScope, OcelotEventQueue eventQueue, OcelotApp ocelotApp,
+	              PlatformSupport platformSupport, PluginManager pluginManager,
+	              TmGuiManager tmGuiManager, LQIGridController lqiGridController,
+	              FindAndReplaceController frController, SegmentView segmentView,
+	              SegmentAttributeView segAttrView, DetailView detailView)
+	        throws IOException, InstantiationException, IllegalAccessException {
 		super(new BorderLayout());
 		this.ocelotScope = ocelotScope;
-		this.eventQueue = ocelotScope.getInstance(OcelotEventQueue.class);
+		this.eventQueue = eventQueue;
 		eventQueue.registerListener(this);
-		this.ocelotApp = ocelotScope.getInstance(OcelotApp.class);
-		this.tmGuiManager = ocelotScope.getInstance(TmGuiManager.class);
-		this.eventQueue.registerListener(tmGuiManager);
-		this.lqiGridController = ocelotScope.getInstance(LQIGridController.class);
-		eventQueue.registerListener(ocelotApp);
-		this.frController = ocelotScope.getInstance(FindAndReplaceController.class);
-		platformSupport = ocelotScope.getInstance(PlatformSupport.class);
+		this.ocelotApp = ocelotApp;
+		this.tmGuiManager = tmGuiManager;
+		this.lqiGridController = lqiGridController;
+		this.frController = frController;
+		this.platformSupport = platformSupport;
 		platformSupport.init(this);
-        this.pluginManager = ocelotScope.getInstance(PluginManager.class);
+		this.pluginManager = pluginManager;
         pluginManager.discover();
+
 		useNativeUI = Boolean.valueOf(System.getProperty("ocelot.nativeUI",
 		        "false"));
 		optionPaneBackgroundColor = (Color) UIManager
 		        .get("OptionPane.background");
 
-		SegmentView segView = ocelotScope.getInstance(SegmentView.class);
-		eventQueue.registerListener(segView);
-
-		SegmentAttributeView segAttrView = ocelotScope
-		        .getInstance(SegmentAttributeView.class);
-		eventQueue.registerListener(segAttrView);
-
-		DetailView detailView = ocelotScope.getInstance(DetailView.class);
-		eventQueue.registerListener(detailView);
-
-		add(setupMainPane(segView, segAttrView, detailView));
+		add(setupMainPane(segmentView, segAttrView, detailView));
 	}
 
 	private Component setupMainPane(SegmentView segView,
@@ -257,7 +253,6 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 		} else if (e.getSource() == this.menuProv) {
 			ProvenanceProfileView userProfileView = ocelotScope
 			        .getInstance(ProvenanceProfileView.class);
-			this.eventQueue.registerListener(userProfileView);
 			showModelessDialog(userProfileView, "Credentials");
 
 		} else if (e.getSource() == this.menuExit) {
@@ -646,7 +641,7 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 
 		Injector ocelotScope = Guice.createInjector(new OcelotModule());
 
-		Ocelot ocelot = new Ocelot(ocelotScope);
+		Ocelot ocelot = ocelotScope.getInstance(Ocelot.class);
 		DefaultKeyboardFocusManager.getCurrentKeyboardFocusManager()
 		        .addKeyEventDispatcher(ocelot);
 
