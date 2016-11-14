@@ -57,7 +57,6 @@ public class FindTest {
 
 	@Before
 	public void resetFRManage() {
-		System.out.println("Reset manager");
 		frManager.reset();
 	}
 
