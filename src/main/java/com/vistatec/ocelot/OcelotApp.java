@@ -34,11 +34,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
-
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.xml.stream.XMLStreamException;
 
 import org.slf4j.Logger;
@@ -53,8 +48,6 @@ import com.vistatec.ocelot.events.SegmentNoteEditEvent;
 import com.vistatec.ocelot.events.api.OcelotEventQueue;
 import com.vistatec.ocelot.events.api.OcelotEventQueueListener;
 import com.vistatec.ocelot.plugins.PluginManager;
-import com.vistatec.ocelot.segment.model.BaseSegmentVariant;
-import com.vistatec.ocelot.segment.model.OcelotSegment;
 import com.vistatec.ocelot.services.EditDistanceReportService;
 import com.vistatec.ocelot.services.SegmentService;
 import com.vistatec.ocelot.services.XliffService;
@@ -191,15 +184,4 @@ public class OcelotApp implements OcelotEventQueueListener {
             this.body = body;
         }
     }
-
-    public List<JMenu> getPluginMenuList(JFrame mainframe) {
-        return pluginManager.getPluginMenuList(mainframe);
-    }
-
-    public List<JMenuItem> getSegmentContextPluginMenus(OcelotSegment segment,
-			BaseSegmentVariant variant, boolean target) {
-		return pluginManager.getSegmentContextMenuItems(segment, variant,
-				target);
-	}
-
 }

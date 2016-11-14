@@ -126,6 +126,7 @@ import com.vistatec.ocelot.events.api.OcelotEventQueueListener;
 import com.vistatec.ocelot.findrep.FindResult;
 import com.vistatec.ocelot.its.model.ITSMetadata;
 import com.vistatec.ocelot.lqi.model.LQIGrid;
+import com.vistatec.ocelot.plugins.PluginManager;
 import com.vistatec.ocelot.rules.DataCategoryFlag;
 import com.vistatec.ocelot.rules.DataCategoryFlagRenderer;
 import com.vistatec.ocelot.rules.NullITSMetadata;
@@ -166,7 +167,7 @@ public class SegmentView extends JScrollPane implements RuleListener,
 	private TableColumnModel tableColumnModel;
 	protected TableRowSorter<SegmentTableModel> sort;
 	private boolean enabledTargetDiff = true;
-	private OcelotApp ocelotApp;
+	private PluginManager pluginManager;
 
 	protected RuleConfiguration ruleConfig;
 	private final OcelotEventQueue eventQueue;
@@ -284,14 +285,14 @@ public class SegmentView extends JScrollPane implements RuleListener,
 	@Inject
 	public SegmentView(OcelotEventQueue eventQueue,
 	        SegmentTableModel segmentTableModel, RuleConfiguration ruleConfig,
-	        OcelotApp ocelotApp, LqiConfigService lqiService) throws IOException, InstantiationException,
+	        PluginManager pluginManager, LqiConfigService lqiService) throws IOException, InstantiationException,
 	        InstantiationException, IllegalAccessException, TransferException {
 		this.eventQueue = eventQueue;
 		this.segmentTableModel = segmentTableModel;
 		this.ruleConfig = ruleConfig;
 		this.ruleConfig.addRuleListener(this);
                 this.lqiGrid = lqiService.readLQIConfig();
-		this.ocelotApp = ocelotApp;
+		this.pluginManager = pluginManager;
 		UIManager.put("Table.focusCellHighlightBorder",
 		        BorderFactory.createLineBorder(Color.BLUE, 2));
 		initializeTable();
@@ -1600,8 +1601,8 @@ public class SegmentView extends JScrollPane implements RuleListener,
 			if (seg != null) {
 				ContextMenu menu = new ContextMenu(xliff, seg, variant, null,
 				        eventQueue, lqiGrid);
-				List<JMenuItem> pluginsItems = ocelotApp
-				        .getSegmentContexPluginMenues(seg, variant, target);
+				List<JMenuItem> pluginsItems = pluginManager
+				        .getSegmentContextMenuItems(seg, variant, target);
 				if (pluginsItems != null) {
 					for (JMenuItem item : pluginsItems) {
 						menu.add(item);

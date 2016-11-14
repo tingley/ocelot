@@ -93,6 +93,7 @@ import com.vistatec.ocelot.its.view.ProvenanceProfileView;
 import com.vistatec.ocelot.lqi.LQIGridController;
 import com.vistatec.ocelot.lqi.LQIKeyEventHandler;
 import com.vistatec.ocelot.lqi.LQIKeyEventManager;
+import com.vistatec.ocelot.plugins.PluginManager;
 import com.vistatec.ocelot.plugins.PluginManagerView;
 import com.vistatec.ocelot.rules.FilterView;
 import com.vistatec.ocelot.segment.view.SegmentAttributeView;
@@ -142,6 +143,7 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 	private final OcelotEventQueue eventQueue;
 	private final OcelotApp ocelotApp;
 	private final LQIGridController lqiGridController;
+	private final PluginManager pluginManager;
 
 	private PlatformSupport platformSupport;
 
@@ -149,6 +151,7 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 	        InstantiationException, IllegalAccessException {
 		super(new BorderLayout());
 		this.ocelotScope = ocelotScope;
+		this.pluginManager = ocelotScope.getInstance(PluginManager.class);
 		this.eventQueue = ocelotScope.getInstance(OcelotEventQueue.class);
 		eventQueue.registerListener(this);
 		this.ocelotApp = ocelotScope.getInstance(OcelotApp.class);
@@ -477,7 +480,7 @@ public class Ocelot extends JPanel implements Runnable, ActionListener,
 		menuPlugins.addActionListener(this);
 		menuExtensions.add(menuPlugins);
 
-		List<JMenu> pluginMenuList = ocelotApp.getPluginMenuList(mainframe);
+		List<JMenu> pluginMenuList = pluginManager.getPluginMenuList(mainframe);
 		for (JMenu menu : pluginMenuList) {
 			menuExtensions.add(menu);
 		}
