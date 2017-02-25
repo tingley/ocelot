@@ -14,6 +14,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<okapi.version>0.30</okapi.version>
 		<okapi.xliff2.version>1.1</okapi.xliff2.version>
+		<dmg.title>${project.artifactId} ${project.version}</dmg.title>
+		<final.name>${project.artifactId}-${project.version}</final.name>
 	</properties>
 
 	<repositories>
@@ -168,7 +170,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>${project.artifactId}-${project.version}</finalName>
+		<finalName>${final.name}</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -375,22 +377,38 @@
 						<version>1.2.1</version>
 						<executions>
 							<execution>
-								<id>exec</id>
+								<id>exec-codesign</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
+								<configuration>
+									<executable>codesign</executable>
+									<arguments>
+										<argument>-s</argument>
+										<argument>${codesignId}</argument>
+										<argument>-vvv</argument>
+										<argument>${project.build.directory}/Ocelot.app</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>exec-dmgbuild</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>dmgbuild</executable>
+									<arguments>
+										<argument>-s</argument>
+										<argument>src/assembly/dmgbuild-settings.py</argument>
+										<argument>${dmg.title}</argument>
+										<argument>target/${final.name}.dmg</argument>
+									</arguments>
+								</configuration>
 							</execution>
 						</executions>
-						<configuration>
-							<executable>codesign</executable>
-							<arguments>
-								<argument>-s</argument>
-								<argument>${codesignId}</argument>
-								<argument>-vvv</argument>
-								<argument>${project.build.directory}/Ocelot.app</argument>
-							</arguments>
-						</configuration>
 					</plugin>
 				</plugins>
 			</build>
