@@ -12,8 +12,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<okapi.version>0.35</okapi.version>
-		<okapi.xliff2.version>1.1</okapi.xliff2.version>
+		<okapi.version>1.40.0</okapi.version>
 		<languagetool.version>3.8</languagetool.version>
 		<dmg.title>${project.artifactId} ${project.version}</dmg.title>
 		<final.name>${project.artifactId}-${project.version}</final.name>
@@ -100,7 +99,7 @@
 		<dependency>
 			<groupId>net.sf.okapi.lib</groupId>
 			<artifactId>okapi-lib-xliff2</artifactId>
-			<version>${okapi.xliff2.version}</version>
+			<version>${okapi.version}</version>
 		</dependency>
 
 		<!-- Okapi TM -->
@@ -149,6 +148,12 @@
 			<artifactId>apache-jena-libs</artifactId>
 			<type>pom</type>
 			<version>2.13.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>xerces</groupId>
+					<artifactId>xercesImpl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Azure Storage dependency -->

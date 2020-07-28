@@ -414,6 +414,11 @@ public class TestFragmentVariant {
         @Override
         public void setTargetDir(Directionality arg0) {
         }
+
+        @Override
+        public Store getStore() {
+            throw new UnsupportedOperationException();
+        }
         
     }
 }
