@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.Window;
 import java.util.List;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 import com.vistatec.ocelot.plugins.Plugin;
 import com.vistatec.ocelot.plugins.exception.FremeEnrichmentException;
 import com.vistatec.ocelot.plugins.exception.UnknownServiceException;

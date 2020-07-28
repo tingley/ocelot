@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Model;
 import com.vistatec.ocelot.events.DisplayLeftComponentEvent;
 import com.vistatec.ocelot.events.EnrichingStartedStoppedEvent;
 import com.vistatec.ocelot.events.EnrichmentViewEvent;

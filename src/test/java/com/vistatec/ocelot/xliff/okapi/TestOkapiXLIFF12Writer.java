@@ -54,9 +54,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.google.common.eventbus.EventBus;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Statement;
 import com.vistatec.ocelot.config.OcelotJsonConfigService;
 import com.vistatec.ocelot.config.OcelotJsonConfigTransferService;
 import com.vistatec.ocelot.config.TestProvenanceConfig;

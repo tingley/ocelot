@@ -22,8 +22,8 @@
 <target>Pc element <pc id="pc1">Important</pc> #1.</target>
 </segment>
 <segment id="s7">
-<source>Sm <mrk id="freme-7" ref="http://freme-project.eu/#char=3,8" type="term">split</mrk> <mrk id="freme-8" ref="http://freme-project.eu/#char=9,16" type="term">element</mrk> <sm id="sm1" translate="no"/> #1.</source>
-<target>Sm split element <sm id="sm1" translate="no"/> #1.</target>
+<source>Sm <mrk id="freme-7" ref="http://freme-project.eu/#char=3,8" type="term">split</mrk> <mrk id="freme-8" ref="http://freme-project.eu/#char=9,16" type="term">element</mrk> <mrk id="sm1" translate="no"> #1.</mrk></source>
+<target>Sm split element <mrk id="sm1" translate="no"> #1.</mrk></target>
 </segment>
 </unit>
 </file>

@@ -1,16 +1,8 @@
 package com.vistatec.ocelot.xliff.freme.helper;
 
-import java.util.List;
-
-import org.apache.xerces.dom.DeferredAttrImpl;
-import org.apache.xerces.dom.DeferredElementImpl;
-import org.apache.xerces.dom.ElementImpl;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.vistatec.ocelot.segment.model.OcelotSegment;
-import com.vistatec.ocelot.services.SegmentService;
 
 public class FremeXliff2_0Helper extends FremeXliffHelper {
 

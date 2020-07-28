@@ -22,8 +22,8 @@
 <target>Pc element <pc id="pc1">Important</pc> #1.</target>
 </segment>
 <segment id="s7">
-<source>Sm split element <sm id="sm1" translate="no"/> #1.</source>
-<target>Sm split element <sm id="sm1" translate="no"/> #1.</target>
+<source>Sm split element <sm id="sm1" translate="no"/> #1.<em startRef="sm1"/></source>
+<target>Sm split element <sm id="sm1" translate="no"/> #1.<em startRef="sm1"/></target>
 </segment>
 </unit>
 </file>

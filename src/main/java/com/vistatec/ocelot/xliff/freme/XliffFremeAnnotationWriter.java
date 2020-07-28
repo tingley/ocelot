@@ -27,9 +27,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.xerces.dom.AttrImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -38,10 +38,10 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
 import com.vistatec.ocelot.segment.model.BaseSegmentVariant;
 import com.vistatec.ocelot.segment.model.CodeAtom;
 import com.vistatec.ocelot.segment.model.OcelotSegment;
@@ -766,7 +766,7 @@ public class XliffFremeAnnotationWriter {
 				Node currNode = null;
 				for(int i = 0; i<extraNodeList.getLength(); i++){
 					currNode = extraNodeList.item(i);
-					AttrImpl segAttr = (AttrImpl) currNode.getAttributes().getNamedItem(EnrichmentAnnotationsConstants.JSON_TAG_SEG_ATTR);
+					Attr segAttr = (Attr) currNode.getAttributes().getNamedItem(EnrichmentAnnotationsConstants.JSON_TAG_SEG_ATTR);
 					if(segAttr != null && segmentId.equals(segAttr.getValue())){
 						extraNode = currNode;
 						break;
