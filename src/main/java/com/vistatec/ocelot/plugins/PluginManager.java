@@ -112,13 +112,15 @@ public class PluginManager implements OcelotEventQueueListener {
 			ReportPlugin.class,
 			FremePlugin.class,
 			QualityPlugin.class,
-			TimerPlugin.class
+			TimerPlugin.class,
+			SaveProviderPlugin.class
 	));
-	private Map<ITSPlugin, Boolean> itsPlugins;
-	private Map<SegmentPlugin, Boolean> segPlugins;
-	private Map<ReportPlugin, Boolean> reportPlugins;
-	private Map<FremePlugin, Boolean> fremePlugins;
-	private Map<TimerPlugin, Boolean> timerPlugins;
+	private Map<ITSPlugin, Boolean> itsPlugins = new HashMap<>();
+	private Map<SegmentPlugin, Boolean> segPlugins = new HashMap<>();
+	private Map<ReportPlugin, Boolean> reportPlugins = new HashMap<>();
+	private Map<FremePlugin, Boolean> fremePlugins = new HashMap<>();
+	private Map<TimerPlugin, Boolean> timerPlugins = new HashMap<>();
+	private Map<SaveProviderPlugin, Boolean> saveProviderPlugins = new HashMap<>();
 	private FremePluginManager fremeManager;
 	private OcelotEventQueue eventQueue;
 	private ClassLoader classLoader;
@@ -129,11 +131,6 @@ public class PluginManager implements OcelotEventQueueListener {
 
 	public PluginManager(JsonConfigService cfgService, File pluginDir,
 			OcelotEventQueue eventQueue) {
-		this.itsPlugins = new HashMap<ITSPlugin, Boolean>();
-		this.segPlugins = new HashMap<SegmentPlugin, Boolean>();
-		this.reportPlugins = new HashMap<ReportPlugin, Boolean>();
-		this.timerPlugins = new HashMap<TimerPlugin, Boolean>();
-        this.fremePlugins = new HashMap<FremePlugin, Boolean>();
 		this.fremeManager = new FremePluginManager(eventQueue);
 		this.eventQueue = eventQueue;
 		this.cfgService = cfgService;
@@ -163,6 +160,7 @@ public class PluginManager implements OcelotEventQueueListener {
         plugins.addAll(fremePlugins);
         plugins.addAll(qualityPlugins);
         plugins.addAll(timerPlugins);
+        plugins.addAll(getSaveProviderPlugins());
 		return plugins;
 	}
 
@@ -193,6 +191,10 @@ public class PluginManager implements OcelotEventQueueListener {
     	return this.timerPlugins.keySet();
     }
 
+	public Set<SaveProviderPlugin> getSaveProviderPlugins() {
+		return this.getSaveProviderPlugins();
+	}
+
 	/**
 	 * Return if the plugin should receive data from the workbench.
 	 */
@@ -216,6 +218,9 @@ public class PluginManager implements OcelotEventQueueListener {
 		} else if (plugin instanceof TimerPlugin) {
 			TimerPlugin timerPlugin = (TimerPlugin) plugin;
 			enabled = timerPlugins.get(timerPlugin);
+		} else if (plugin instanceof SaveProviderPlugin) {
+			SaveProviderPlugin saveProviderPlugin = (SaveProviderPlugin) plugin;
+			enabled = saveProviderPlugins.get(saveProviderPlugin);
 		}
 		return enabled;
 	}
@@ -245,6 +250,9 @@ public class PluginManager implements OcelotEventQueueListener {
 			TimerPlugin timerPlugin = (TimerPlugin) plugin;
 			timerPlugins.put(timerPlugin, enabled);
 			timerPlugin.getTimerWidget().setEnabled(enabled);
+		} else if (plugin instanceof SaveProviderPlugin) {
+			SaveProviderPlugin saveProviderPlugin = (SaveProviderPlugin) plugin;
+			saveProviderPlugins.put(saveProviderPlugin, enabled);
 		}
 		cfgService.savePluginEnabled(plugin, enabled);
 	}
@@ -479,6 +487,7 @@ public class PluginManager implements OcelotEventQueueListener {
 		segPlugins = loadPlugins(SegmentPlugin.class);
 		reportPlugins = loadPlugins(ReportPlugin.class);
 		timerPlugins = loadPlugins(TimerPlugin.class);
+		saveProviderPlugins = loadPlugins(SaveProviderPlugin.class);
 
 		// XXX special cases / non-standard interfaces
 		loadFremePlugins();
