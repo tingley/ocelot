@@ -1,0 +1,29 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.java text
+*.json text
+pom.xml text
+
+# OS specific scripts should have the OS specific eol
+*.bat   text eol=crlf
+*.sh    text eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary
+
+# Special naming convention to control line endiness by using file names
+# We only use them for the test data files.
+**/src/test/resources/**/*_auto.*    text
+**/src/test/resources/**/*-auto.*    text
+**/src/test/resources/**/*_crlf.*    text eol=crlf
+**/src/test/resources/**/*-crlf.*    text eol=crlf
+**/src/test/resources/**/*_lf.*      text eol=lf
+**/src/test/resources/**/*-lf.*      text eol=lf
+**/src/test/resources/**/*_utf16.*   binary
+**/src/test/resources/**/*-utf16.*   binary
+**/src/test/resources/**/*_bin.*     binary
+**/src/test/resources/**/*-bin.*     binary
