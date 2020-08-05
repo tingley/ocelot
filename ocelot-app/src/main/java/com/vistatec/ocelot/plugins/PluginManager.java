@@ -546,6 +546,7 @@ public class PluginManager implements OcelotEventQueueListener {
 								}
 								else {
 									pluginImplClassNames.put(pluginClass, name);
+									LOG.info("Found {}: {}", pluginClass.getSimpleName(), name);
 								}
 							}
 						}

@@ -483,11 +483,12 @@ public class Ocelot extends JPanel
 		menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.SHIFT_MASK | getPlatformKeyMask()));
 		menuFile.add(menuSaveAs);
 
-		menuSaveTo = new JMenuItem("Save To...");
+		menuSaveTo = new JMenu("Save To...");
 		Set<SaveProviderPlugin> saveToPlugins = pluginManager.getSaveProviderPlugins();
 		menuSaveTo.setEnabled(!saveToPlugins.isEmpty());
 		for (SaveProviderPlugin p : saveToPlugins) {
 			final JMenuItem item = p.getSaveMenuItem();
+			item.setEnabled(configService.wasPluginEnabled(p));
 			item.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
