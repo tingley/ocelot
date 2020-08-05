@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vistatec.ocelot.Ocelot;
 import com.vistatec.ocelot.OcelotApp;
 import com.vistatec.ocelot.Version;
 import com.vistatec.ocelot.OcelotApp.ErrorAlertException;

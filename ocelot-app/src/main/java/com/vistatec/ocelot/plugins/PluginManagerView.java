@@ -185,11 +185,16 @@ public class PluginManagerView extends ODialogPanel implements ActionListener, I
         pluginLabel.setFont(font);
         add(pluginLabel, gridBag);
     }
-    
+
     private String getPluginType(Plugin plugin) {
-        return (plugin instanceof ITSPlugin) ? "ITS" :
-                 (plugin instanceof SegmentPlugin) ? "Segment" :
-                   "Unknown";
+        if (plugin instanceof ITSPlugin) return "ITS";
+        if (plugin instanceof SegmentPlugin) return "Segment";
+        if (plugin instanceof QualityPlugin) return "Quality";
+        if (plugin instanceof ReportPlugin) return "Report";
+        if (plugin instanceof SaveProviderPlugin) return "Save Provider";
+        if (plugin instanceof SegmentPlugin) return "Segment";
+        if (plugin instanceof TimerPlugin) return "Timer";
+        return "Unknown";
     }
 
     @Override
