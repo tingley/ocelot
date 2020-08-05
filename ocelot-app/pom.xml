@@ -21,20 +21,6 @@
 		<final.name>${project.artifactId}-${project.version}</final.name>
 	</properties>
 
-	<repositories>
-		<repository>
-			<id>okapi-release</id>
-			<name>Okapi Release</name>
-			<url>http://repository-okapi.forge.cloudbees.com/release/</url>
-		</repository>
-		<repository>
-			<id>okapi-snapshot</id>
-			<name>Okapi Snapshot</name>
-			<url>http://repository-okapi.forge.cloudbees.com/snapshot/</url>
-		</repository>
-	</repositories>
-
-
 	<dependencies>
 
 		<!-- Testing Dependencies -->
@@ -154,12 +140,6 @@
 		</dependency>
 
 		<!-- Azure Storage dependency -->
-		<dependency>
-			<groupId>com.microsoft.azure</groupId>
-			<artifactId>azure-storage</artifactId>
-			<version>4.2.0</version>
-		</dependency>
-
         <dependency>
             <groupId>org.languagetool</groupId>
             <artifactId>languagetool-core</artifactId>

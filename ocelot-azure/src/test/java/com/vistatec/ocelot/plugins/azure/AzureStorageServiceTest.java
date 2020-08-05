@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.storage.service;
+package com.vistatec.ocelot.plugins.azure;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,7 +18,6 @@ import com.vistatec.ocelot.config.ConfigurationManager;
 import com.vistatec.ocelot.config.JsonConfigService;
 import com.vistatec.ocelot.config.json.OcelotAzureConfig;
 import com.vistatec.ocelot.storage.model.PostUploadRequest;
-import com.vistatec.ocelot.storage.service.util.Util;
 
 public class AzureStorageServiceTest {
 	

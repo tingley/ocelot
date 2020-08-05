@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.storage.service;
+package com.vistatec.ocelot.plugins.azure;
 
 import java.io.File;
 import java.io.FileInputStream;

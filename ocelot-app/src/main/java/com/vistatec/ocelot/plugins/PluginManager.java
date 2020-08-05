@@ -192,7 +192,7 @@ public class PluginManager implements OcelotEventQueueListener {
     }
 
 	public Set<SaveProviderPlugin> getSaveProviderPlugins() {
-		return this.getSaveProviderPlugins();
+		return this.saveProviderPlugins.keySet();
 	}
 
 	/**

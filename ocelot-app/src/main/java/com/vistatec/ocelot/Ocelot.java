@@ -56,7 +56,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -74,6 +74,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.MenuElement;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.text.JTextComponent;
@@ -109,16 +110,14 @@ import com.vistatec.ocelot.lqi.LQIKeyEventHandler;
 import com.vistatec.ocelot.lqi.LQIKeyEventManager;
 import com.vistatec.ocelot.lqi.model.LQIGridConfiguration;
 import com.vistatec.ocelot.lqi.model.LQIGridConfigurations;
+import com.vistatec.ocelot.plugins.PluginManager;
 import com.vistatec.ocelot.plugins.PluginManagerView;
+import com.vistatec.ocelot.plugins.SaveProviderPlugin;
 import com.vistatec.ocelot.profile.ProfileManager;
 import com.vistatec.ocelot.rules.FilterView;
 import com.vistatec.ocelot.segment.view.SegmentAttributeView;
 import com.vistatec.ocelot.segment.view.SegmentView;
 import com.vistatec.ocelot.spellcheck.SpellcheckController;
-import com.vistatec.ocelot.storage.model.PostUploadRequest;
-import com.vistatec.ocelot.storage.service.AzureStorageService;
-import com.vistatec.ocelot.storage.service.StorageService;
-import com.vistatec.ocelot.storage.service.util.Util;
 import com.vistatec.ocelot.tm.gui.TmGuiManager;
 import com.vistatec.ocelot.ui.ODialogPanel;
 import com.vistatec.ocelot.ui.OcelotToolBar;
@@ -146,7 +145,7 @@ public class Ocelot extends JPanel
 	private JMenuItem menuConfigTm;
 	private JMenuItem menuSaveAsTmx;
 	private JMenuItem menuLqiGrid;
-	private JMenuItem menuSaveToAzure;
+	private JMenuItem menuSaveTo;
 
 	private OcelotToolBar toolBar;
 	private JFrame mainframe;
@@ -173,7 +172,7 @@ public class Ocelot extends JPanel
 
 	private PlatformSupport platformSupport;
 
-	private StorageService storageService;
+	private PluginManager pluginManager;
 
 	private boolean enableStorage;
 
@@ -195,6 +194,7 @@ public class Ocelot extends JPanel
 		lgkManager = ocelotScope.getInstance(LingoTekManager.class);
 		platformSupport = ocelotScope.getInstance(PlatformSupport.class);
 		platformSupport.init(this);
+		this.pluginManager = ocelotScope.getInstance(PluginManager.class);
 
 		useNativeUI = Boolean.valueOf(System.getProperty("ocelot.nativeUI", "false"));
 		optionPaneBackgroundColor = (Color) UIManager.get("OptionPane.background");
@@ -280,10 +280,6 @@ public class Ocelot extends JPanel
 			handleApplicationExit();
 		} else if (e.getSource() == this.menuSaveAs) {
 			saveAs();
-		} else if (e.getSource() == this.menuSaveToAzure) {
-			if (ocelotApp.hasOpenFile()) {
-				handleStoring(configService);
-			}
 		} else if (e.getSource().equals(menuSaveAsTmx)) {
 			tmGuiManager.saveAsTmx(mainframe);
 		} else if (e.getSource() == this.menuSave) {
@@ -312,29 +308,18 @@ public class Ocelot extends JPanel
 	}
 
 	private void downloadFromLgk() {
-		boolean canDownload = true;
-		if (ocelotApp.isFileDirty() && menuSaveToAzure.isEnabled()) {
-			canDownload = checkSaveToAzure();
-		}
-		if (canDownload) {
-			File file = lgkManager.downloadFile(mainframe, configService.getUserProvenance().getLangCode());
-			openFile(file, true);
-		}
+		File file = lgkManager.downloadFile(mainframe, configService.getUserProvenance().getLangCode());
+		openFile(file, true);
 	}
 
 	private void promptOpenXLIFFFile() {
-		boolean canOpenFile = true;
-		if(ocelotApp.isFileDirty() && menuSaveToAzure.isEnabled()){
-			canOpenFile = checkSaveToAzure();
-		}
-		if(canOpenFile){
-			FileDialog fd = new FileDialog(mainframe, "Open", FileDialog.LOAD);
-			fd.setFilenameFilter(new XliffFileFilter());
-			fd.setVisible(true);
-			File sourceFile = getSelectedFile(fd);
-			fd.dispose();
-			openFile(sourceFile, false);
-		}
+		// TODO check for dirty file
+		FileDialog fd = new FileDialog(mainframe, "Open", FileDialog.LOAD);
+		fd.setFilenameFilter(new XliffFileFilter());
+		fd.setVisible(true);
+		File sourceFile = getSelectedFile(fd);
+		fd.dispose();
+		openFile(sourceFile, false);
 	}
 
 	private void openFile(File file, boolean temporary) {
@@ -364,7 +349,9 @@ public class Ocelot extends JPanel
 				menuSave.setEnabled(true);
 				menuSaveAs.setEnabled(true);
 				menuSaveAsTmx.setEnabled(true);
-				menuSaveToAzure.setEnabled(enableStorage);
+				for (MenuElement e : menuSaveTo.getSubElements()) {
+					((JMenuItem)e).setEnabled(false);
+				}
                 menuFindReplace.setEnabled(true);
                 menuSpellcheck.setEnabled(true);
 				toolBar.loadFontsAndSizes(ocelotApp.getFileSourceLang(), ocelotApp.getFileTargetLang());
@@ -448,38 +435,21 @@ public class Ocelot extends JPanel
 		showModelessDialog(new AboutDialog(icon), "About Ocelot");
 	}
 
-	private boolean checkSaveToAzure() {
-		LOG.debug("Checking if the currently open file has been saved to Azure");
-		boolean retValue = true;
-		if (!ocelotApp.getSavedToAzure()) {
-			int option = JOptionPane.showConfirmDialog(mainframe,
-					"The currently open file has not been saved to Azure. Do you want to continue?", "Save To Azure",
-					JOptionPane.YES_NO_OPTION);
-			retValue = option == JOptionPane.YES_OPTION;
-		}
-		return retValue;
-	}
-
 	/**
 	 * Exit handler. This should prompt to save unsaved data.
 	 */
 	public void handleApplicationExit() {
 		boolean canQuit = true;
 		if (ocelotApp.isFileDirty()) {
-			if (menuSaveToAzure.isEnabled()) {
-				canQuit = checkSaveToAzure();
-			} else {
-				int rv = JOptionPane.showConfirmDialog(this,
-						"You have unsaved changes. Would you like to save before exiting?", "Save Unsaved Changes",
-						JOptionPane.YES_NO_CANCEL_OPTION);
-				if (rv == JOptionPane.YES_OPTION) {
-					canQuit = save(ocelotApp.getOpenFile());
+			int rv = JOptionPane.showConfirmDialog(this,
+					"You have unsaved changes. Would you like to save before exiting?", "Save Unsaved Changes",
+					JOptionPane.YES_NO_CANCEL_OPTION);
+			if (rv == JOptionPane.YES_OPTION) {
+				canQuit = save(ocelotApp.getOpenFile());
 
-				} else if (rv != JOptionPane.NO_OPTION) {
-					canQuit = false;
-				}
+			} else if (rv != JOptionPane.NO_OPTION) {
+				canQuit = false;
 			}
-
 		}
 		if (canQuit) {
 			quitOcelot();
@@ -513,11 +483,28 @@ public class Ocelot extends JPanel
 		menuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.SHIFT_MASK | getPlatformKeyMask()));
 		menuFile.add(menuSaveAs);
 
-		menuSaveToAzure = new JMenuItem("Save to Azure");
-		menuSaveToAzure.setEnabled(false);
-		menuSaveToAzure.addActionListener(this);
-		// TODO add accelerator
-		menuFile.add(menuSaveToAzure);
+		menuSaveTo = new JMenuItem("Save To...");
+		Set<SaveProviderPlugin> saveToPlugins = pluginManager.getSaveProviderPlugins();
+		menuSaveTo.setEnabled(!saveToPlugins.isEmpty());
+		for (SaveProviderPlugin p : saveToPlugins) {
+			final JMenuItem item = p.getSaveMenuItem();
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (e.getSource() == item &&
+							ocelotApp.checkEditedSegments(mainframe)) {
+						try {
+							p.handleSave(configService, ocelotApp, mainframe);
+						}
+						catch (ErrorAlertException ex) {
+							alertUser(ex.title, ex.body);
+						}
+					}
+				}
+			});
+			menuSaveTo.add(item);
+		}
+		menuFile.add(menuSaveTo);
 
 		menuSaveAsTmx = new JMenuItem("Save As tmx");
 		menuSaveAsTmx.setEnabled(false);
@@ -970,73 +957,6 @@ public class Ocelot extends JPanel
 		if (ocelotAzureConfiguration != null) {
 			enableStorage = ocelotAzureConfiguration.isComplete();
 			ocelotApp.enableSegmentErrorChecker(enableStorage);
-		}
-	}
-
-	/**
-	 * Handles the event save to Azure
-	 */
-	private void handleStoring(OcelotJsonConfigService configService) {
-
-		OcelotAzureConfig ocelotAzureConfiguration = configService.getOcelotAzureConfiguration();
-
-		if (ocelotAzureConfiguration != null) {
-
-			File tempFile = null;
-			try {
-				if (ocelotAzureConfiguration.isComplete()) {
-					LOG.debug("Checking if this file has already been saved to Azure...");
-					boolean saveToAzure = true;
-					if (ocelotApp.getSavedToAzure()) {
-						int option = JOptionPane.showConfirmDialog(mainframe,
-								"This file has already been uploaded to Azure. Do you want to upload it again?",
-								"Save To Azure Confirmation", JOptionPane.YES_NO_OPTION);
-						saveToAzure = option == JOptionPane.YES_OPTION;
-					}
-
-					if (saveToAzure && ocelotApp.checkEditedSegments(mainframe)) {
-						tempFile = File.createTempFile("ocelot", "azure");
-						ocelotApp.saveFile(tempFile);
-
-						storageService = new AzureStorageService(ocelotAzureConfiguration.getSas(),
-								ocelotAzureConfiguration.getBlobEndpoint(),
-								ocelotAzureConfiguration.getQueueEndpoint());
-
-						String fileId = UUID.randomUUID().toString();
-						boolean uploadedFileToBlobStorage = storageService.uploadFileToBlobStorage(
-								tempFile.getAbsolutePath(), "unprocessed", fileId, ocelotApp.getDefaultFileName());
-						if (uploadedFileToBlobStorage) {
-							LOG.debug("File with id " + fileId + " was uploaded to blob storage");
-
-							PostUploadRequest postUploadRequest = Util.getPostUploadRequest(fileId);
-							String json = Util.serializeToJson(postUploadRequest);
-							LOG.debug("Post Upload Request for Storage Queue in json format is " + json);
-							boolean messageSent = storageService.sendMessageToPostUploadQueue(json);
-							if (!messageSent) {
-								LOG.error("No message sent to Storage queue.");
-							} else {
-								LOG.info("Sent message to Storage queue.");
-							}
-							ocelotApp.savedToAzure();
-							JOptionPane.showMessageDialog(mainframe, "File successfully saved to Azure.",
-									"Save to Azure", JOptionPane.INFORMATION_MESSAGE);
-						} else {
-							LOG.error("File with id " + fileId + " was not uploaded to blob storage");
-							JOptionPane.showMessageDialog(mainframe,
-									"An error has occurred while saving the document to Azure. Please, try again.");
-						}
-					}
-				}
-			} catch (IOException e) {
-				LOG.error("Error while saving the document.", e);
-				JOptionPane.showMessageDialog(mainframe, "An error has occurred while saving the document.");
-			} catch (ErrorAlertException e) {
-				alertUser(e.title, e.body);
-			} finally {
-				if (tempFile != null) {
-					tempFile.delete();
-				}
-			}
 		}
 	}
 

@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.storage.service.util;
+package com.vistatec.ocelot.plugins.azure;
 
 /**
  * @author KatiaI

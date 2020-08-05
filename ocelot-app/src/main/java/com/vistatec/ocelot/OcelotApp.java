@@ -84,7 +84,6 @@ public class OcelotApp implements OcelotEventQueueListener {
     private File openFile;
     private boolean fileDirty = false, hasOpenFile = false;
     private boolean temporaryFile;
-    private boolean savedToAzure;
 
     @Inject
     public OcelotApp(OcelotEventQueue eventQueue, PluginManager pluginManager,
@@ -155,7 +154,6 @@ public class OcelotApp implements OcelotEventQueueListener {
         	fileName = openFile.getName();
         }
         segErrorChecker.clear();
-        savedToAzure = false;
         eventQueue.post(new OpenFileEvent(fileName, openXliffFile));
     }
     
@@ -279,18 +277,7 @@ public class OcelotApp implements OcelotEventQueueListener {
 		}
 	}
 
-
 	public boolean checkEditedSegments(JFrame mainframe ) {
 		return segErrorChecker.checkIncompleteEditedSegments(mainframe, eventQueue);
 	}
-
-	public void savedToAzure() {
-		
-		savedToAzure = true;
-	}
-	
-	public boolean getSavedToAzure() {
-		return savedToAzure;
-	}
-
 }
