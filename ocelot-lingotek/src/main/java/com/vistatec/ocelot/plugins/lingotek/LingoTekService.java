@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.lgk;
+package com.vistatec.ocelot.plugins.lingotek;
 
 import java.io.File;
 import java.io.IOException;

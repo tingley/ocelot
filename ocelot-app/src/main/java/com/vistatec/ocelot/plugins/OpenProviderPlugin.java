@@ -1,5 +1,7 @@
 package com.vistatec.ocelot.plugins;
 
+import java.io.File;
+
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
@@ -7,13 +9,10 @@ import com.vistatec.ocelot.OcelotApp;
 import com.vistatec.ocelot.OcelotApp.ErrorAlertException;
 import com.vistatec.ocelot.config.OcelotJsonConfigService;
 
-/**
- * Plugin to register a custom handler in the "Save to.." menu and
- * handle its selection.
- */
-public interface SaveProviderPlugin extends Plugin {
+public interface OpenProviderPlugin extends Plugin {
 
 	JMenuItem getMenuItem();
 
-	void handleSave(OcelotJsonConfigService configService, OcelotApp ocelotApp, JFrame parentFrame) throws ErrorAlertException;
+	File handleOpen(OcelotJsonConfigService configService, OcelotApp ocelotApp, JFrame parentFrame)
+			throws ErrorAlertException;
 }

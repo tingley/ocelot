@@ -12,6 +12,7 @@
     <modules>
         <module>ocelot-app</module>
         <module>ocelot-azure</module>
+        <module>ocelot-lingotek</module>
     </modules>
 
 </project>

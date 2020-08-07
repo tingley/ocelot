@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.lgk;
+package com.vistatec.ocelot.plugins.lingotek;
 
 /**
  * Exception raised when an error occurs while using LingoTek services.

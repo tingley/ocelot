@@ -192,6 +192,7 @@ public class PluginManagerView extends ODialogPanel implements ActionListener, I
         if (plugin instanceof QualityPlugin) return "Quality";
         if (plugin instanceof ReportPlugin) return "Report";
         if (plugin instanceof SaveProviderPlugin) return "Save Provider";
+        if (plugin instanceof OpenProviderPlugin) return "Open Provider";
         if (plugin instanceof SegmentPlugin) return "Segment";
         if (plugin instanceof TimerPlugin) return "Timer";
         return "Unknown";

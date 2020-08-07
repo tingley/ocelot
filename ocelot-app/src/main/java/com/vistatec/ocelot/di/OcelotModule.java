@@ -24,7 +24,6 @@ import com.vistatec.ocelot.events.api.EventBusWrapper;
 import com.vistatec.ocelot.events.api.OcelotEventQueue;
 import com.vistatec.ocelot.findrep.FindAndReplaceController;
 import com.vistatec.ocelot.its.stats.model.ITSDocStats;
-import com.vistatec.ocelot.lgk.LingoTekManager;
 import com.vistatec.ocelot.lqi.LQIGridController;
 import com.vistatec.ocelot.plugins.PluginManager;
 import com.vistatec.ocelot.profile.ProfileManager;
@@ -118,8 +117,6 @@ public class OcelotModule extends AbstractModule {
             eventQueue.registerListener(frController);
             scController = new SpellcheckController(eventQueue, ocelotCfgService);
             eventQueue.registerListener(scController);
-            LingoTekManager lgkManager = new LingoTekManager(ocelotCfgService.getLingoTekConfigurationParams());
-            bind(LingoTekManager.class).toInstance(lgkManager);
         } catch (IOException | TransferException | ConfigurationException ex) {
             LOG.error("Failed to initialize configuration", ex);
             System.exit(1);

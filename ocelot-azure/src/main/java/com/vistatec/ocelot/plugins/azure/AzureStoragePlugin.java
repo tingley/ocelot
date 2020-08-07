@@ -1,7 +1,5 @@
 package com.vistatec.ocelot.plugins.azure;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
@@ -33,7 +31,7 @@ public class AzureStoragePlugin implements SaveProviderPlugin {
 		return Version.BANNER;
 	}
 
-	public JMenuItem getSaveMenuItem() {
+	public JMenuItem getMenuItem() {
 		if (menuItem == null) {
 			menuItem = new JMenuItem("Save to Azure");
 			menuItem.setEnabled(false);

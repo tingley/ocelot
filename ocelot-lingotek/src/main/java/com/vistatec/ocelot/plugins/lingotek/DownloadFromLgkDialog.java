@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.lgk;
+package com.vistatec.ocelot.plugins.lingotek;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;

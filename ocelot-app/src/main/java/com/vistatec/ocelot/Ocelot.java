@@ -104,12 +104,12 @@ import com.vistatec.ocelot.events.api.OcelotEventQueue;
 import com.vistatec.ocelot.events.api.OcelotEventQueueListener;
 import com.vistatec.ocelot.findrep.FindAndReplaceController;
 import com.vistatec.ocelot.its.view.ProvenanceProfileView;
-import com.vistatec.ocelot.lgk.LingoTekManager;
 import com.vistatec.ocelot.lqi.LQIGridController;
 import com.vistatec.ocelot.lqi.LQIKeyEventHandler;
 import com.vistatec.ocelot.lqi.LQIKeyEventManager;
 import com.vistatec.ocelot.lqi.model.LQIGridConfiguration;
 import com.vistatec.ocelot.lqi.model.LQIGridConfigurations;
+import com.vistatec.ocelot.plugins.OpenProviderPlugin;
 import com.vistatec.ocelot.plugins.PluginManager;
 import com.vistatec.ocelot.plugins.PluginManagerView;
 import com.vistatec.ocelot.plugins.SaveProviderPlugin;
@@ -136,7 +136,7 @@ public class Ocelot extends JPanel
 
 	private JMenuBar menuBar;
 	private JMenu menuFile, menuView, menuExtensions, menuHelp, mnuEdit;
-	private JMenuItem menuOpenXLIFF, menuDownloadLGK, menuExit, menuAbout, menuRules, menuProv,
+	private JMenuItem menuOpenXLIFF, menuExit, menuAbout, menuRules, menuProv,
             menuSave, menuSaveAs, menuFindReplace, menuSpellcheck, menuWorkspace;
 	private JMenuItem menuPlugins;
 	private JCheckBoxMenuItem menuTgtDiff;
@@ -146,6 +146,7 @@ public class Ocelot extends JPanel
 	private JMenuItem menuSaveAsTmx;
 	private JMenuItem menuLqiGrid;
 	private JMenuItem menuSaveTo;
+	private JMenuItem menuOpenFrom;
 
 	private OcelotToolBar toolBar;
 	private JFrame mainframe;
@@ -168,7 +169,6 @@ public class Ocelot extends JPanel
 	private final OcelotEventQueue eventQueue;
 	private final OcelotApp ocelotApp;
 	private final LQIGridController lqiGridController;
-	private final LingoTekManager lgkManager;
 
 	private PlatformSupport platformSupport;
 
@@ -191,7 +191,6 @@ public class Ocelot extends JPanel
 		this.configService = (OcelotJsonConfigService) ocelotScope.getInstance(JsonConfigService.class);
 		setEnableStorage(configService);
 		this.profileManager = ocelotScope.getInstance(ProfileManager.class);
-		lgkManager = ocelotScope.getInstance(LingoTekManager.class);
 		platformSupport = ocelotScope.getInstance(PlatformSupport.class);
 		platformSupport.init(this);
 		this.pluginManager = ocelotScope.getInstance(PluginManager.class);
@@ -262,8 +261,6 @@ public class Ocelot extends JPanel
 
 		} else if (e.getSource() == this.menuOpenXLIFF) {
 			promptOpenXLIFFFile();
-		} else if (e.getSource().equals(menuDownloadLGK)) {
-			downloadFromLgk();
 		} else if (e.getSource() == this.menuRules) {
 			showModelessDialog(ocelotScope.getInstance(FilterView.class), "Filters");
 		} else if (e.getSource() == this.menuPlugins) {
@@ -305,11 +302,6 @@ public class Ocelot extends JPanel
 				LOG.warn("Impossible to save the \"Show not traslatable segments\" configuration", e1);
 			}
 		}
-	}
-
-	private void downloadFromLgk() {
-		File file = lgkManager.downloadFile(mainframe, configService.getUserProvenance().getLangCode());
-		openFile(file, true);
 	}
 
 	private void promptOpenXLIFFFile() {
@@ -466,10 +458,29 @@ public class Ocelot extends JPanel
 		menuOpenXLIFF.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, getPlatformKeyMask()));
 		menuFile.add(menuOpenXLIFF);
 
-		menuDownloadLGK = new JMenuItem("Download from LGK");
-		menuDownloadLGK.addActionListener(this);
-		menuDownloadLGK.setEnabled(lgkManager.isEnabled());
-		menuFile.add(menuDownloadLGK);
+		menuOpenFrom = new JMenu("Open From....");
+		Set<OpenProviderPlugin> openFromPlugins = pluginManager.getOpenProviderPlugins();
+		menuOpenFrom.setEnabled(!openFromPlugins.isEmpty());
+		for (OpenProviderPlugin p : openFromPlugins) {
+			final JMenuItem item = p.getMenuItem();
+			item.setEnabled(configService.wasPluginEnabled(p));
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (e.getSource() == item) {
+						try {
+							File file = p.handleOpen(configService, ocelotApp, mainframe);
+							openFile(file, true);
+						}
+						catch (ErrorAlertException ex) {
+							alertUser(ex.title, ex.body);
+						}
+					}
+				}
+			});
+			menuOpenFrom.add(item);
+		}
+		menuFile.add(menuOpenFrom);
 
 		menuSave = new JMenuItem("Save");
 		menuSave.setEnabled(false);
@@ -487,7 +498,7 @@ public class Ocelot extends JPanel
 		Set<SaveProviderPlugin> saveToPlugins = pluginManager.getSaveProviderPlugins();
 		menuSaveTo.setEnabled(!saveToPlugins.isEmpty());
 		for (SaveProviderPlugin p : saveToPlugins) {
-			final JMenuItem item = p.getSaveMenuItem();
+			final JMenuItem item = p.getMenuItem();
 			item.setEnabled(configService.wasPluginEnabled(p));
 			item.addActionListener(new ActionListener() {
 				@Override

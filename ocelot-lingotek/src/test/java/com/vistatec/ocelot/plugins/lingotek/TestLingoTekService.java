@@ -1,4 +1,4 @@
-package com.vistatec.ocelot.services;
+package com.vistatec.ocelot.plugins.lingotek;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,9 +22,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.google.common.io.Files;
-import com.vistatec.ocelot.lgk.IHttpRequestService;
-import com.vistatec.ocelot.lgk.LingoTekService;
-import com.vistatec.ocelot.lgk.LingoTekServiceException;
 
 public class TestLingoTekService {
 

@@ -113,7 +113,8 @@ public class PluginManager implements OcelotEventQueueListener {
 			FremePlugin.class,
 			QualityPlugin.class,
 			TimerPlugin.class,
-			SaveProviderPlugin.class
+			SaveProviderPlugin.class,
+			OpenProviderPlugin.class
 	));
 	private Map<ITSPlugin, Boolean> itsPlugins = new HashMap<>();
 	private Map<SegmentPlugin, Boolean> segPlugins = new HashMap<>();
@@ -121,6 +122,7 @@ public class PluginManager implements OcelotEventQueueListener {
 	private Map<FremePlugin, Boolean> fremePlugins = new HashMap<>();
 	private Map<TimerPlugin, Boolean> timerPlugins = new HashMap<>();
 	private Map<SaveProviderPlugin, Boolean> saveProviderPlugins = new HashMap<>();
+	private Map<OpenProviderPlugin, Boolean> openProviderPlugins = new HashMap<>();
 	private FremePluginManager fremeManager;
 	private OcelotEventQueue eventQueue;
 	private ClassLoader classLoader;
@@ -161,6 +163,7 @@ public class PluginManager implements OcelotEventQueueListener {
         plugins.addAll(qualityPlugins);
         plugins.addAll(timerPlugins);
         plugins.addAll(getSaveProviderPlugins());
+        plugins.addAll(getOpenProviderPlugins());
 		return plugins;
 	}
 
@@ -195,6 +198,10 @@ public class PluginManager implements OcelotEventQueueListener {
 		return this.saveProviderPlugins.keySet();
 	}
 
+	public Set<OpenProviderPlugin> getOpenProviderPlugins() {
+		return this.openProviderPlugins.keySet();
+	}
+
 	/**
 	 * Return if the plugin should receive data from the workbench.
 	 */
@@ -221,6 +228,9 @@ public class PluginManager implements OcelotEventQueueListener {
 		} else if (plugin instanceof SaveProviderPlugin) {
 			SaveProviderPlugin saveProviderPlugin = (SaveProviderPlugin) plugin;
 			enabled = saveProviderPlugins.get(saveProviderPlugin);
+		} else if (plugin instanceof OpenProviderPlugin) {
+			OpenProviderPlugin openProviderPlugin = (OpenProviderPlugin) plugin;
+			enabled = openProviderPlugins.get(openProviderPlugin);
 		}
 		return enabled;
 	}
@@ -253,6 +263,9 @@ public class PluginManager implements OcelotEventQueueListener {
 		} else if (plugin instanceof SaveProviderPlugin) {
 			SaveProviderPlugin saveProviderPlugin = (SaveProviderPlugin) plugin;
 			saveProviderPlugins.put(saveProviderPlugin, enabled);
+		} else if (plugin instanceof OpenProviderPlugin) {
+			OpenProviderPlugin openProviderPlugin = (OpenProviderPlugin) plugin;
+			openProviderPlugins.put(openProviderPlugin, enabled);
 		}
 		cfgService.savePluginEnabled(plugin, enabled);
 	}
@@ -488,6 +501,7 @@ public class PluginManager implements OcelotEventQueueListener {
 		reportPlugins = loadPlugins(ReportPlugin.class);
 		timerPlugins = loadPlugins(TimerPlugin.class);
 		saveProviderPlugins = loadPlugins(SaveProviderPlugin.class);
+		openProviderPlugins = loadPlugins(OpenProviderPlugin.class);
 
 		// XXX special cases / non-standard interfaces
 		loadFremePlugins();
