@@ -175,7 +175,6 @@ public class WordFinder {
 	 */
 	public void setScope(int scope, Locale locale) {
 
-		System.out.println("SCOPE");
 		if (scope != SCOPE_SOURCE && scope != SCOPE_TARGET) {
 			throw new IllegalArgumentException("Invalid scope value: " + scope
 					+ ". Accepted values are " + SCOPE_SOURCE + " and "

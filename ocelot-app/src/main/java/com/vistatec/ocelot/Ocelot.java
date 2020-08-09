@@ -145,7 +145,7 @@ public class Ocelot extends JPanel
 	private JMenuItem menuConfigTm;
 	private JMenuItem menuSaveAsTmx;
 	private JMenuItem menuLqiGrid;
-	private JMenuItem menuSaveTo;
+	private JMenu menuSaveTo;
 	private JMenuItem menuOpenFrom;
 
 	private OcelotToolBar toolBar;
@@ -341,8 +341,8 @@ public class Ocelot extends JPanel
 				menuSave.setEnabled(true);
 				menuSaveAs.setEnabled(true);
 				menuSaveAsTmx.setEnabled(true);
-				for (MenuElement e : menuSaveTo.getSubElements()) {
-					((JMenuItem)e).setEnabled(false);
+				for (int i = 0; i < menuSaveTo.getItemCount(); i++) {
+					menuSaveTo.getItem(i).setEnabled(false);
 				}
                 menuFindReplace.setEnabled(true);
                 menuSpellcheck.setEnabled(true);

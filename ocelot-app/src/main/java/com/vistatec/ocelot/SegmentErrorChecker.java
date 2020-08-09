@@ -95,7 +95,6 @@ public class SegmentErrorChecker implements OcelotEventQueueListener {
 	}
 
 	public void clear() {
-		System.out.println("Clear");
 		editedSegmentsList.clear();
 	}
 
